@@ -1,19 +1,15 @@
 "use client";
+"use client";
 
 import { useState, useEffect, useRef } from "react";
 
-export default function Home() {
+export default function Page() {
 
-  const fullText = `package com.example.codea;
-
-import android.content.Context;
+  const fullText: string = `import android.content.Context;
 import android.content.SharedPreferences;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -21,37 +17,177 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-
 public class Backend {
-
     private static final String BASE_URL = "https://dbstorage.onrender.com";
     private static final String PREF_NAME = "app";
     private static final String TOKEN_KEY = "token";
-
     private static OkHttpClient client;
-}`;
+    public static void init(Context context) {
+        client = new OkHttpClient.Builder()
+                .addInterceptor(chain -> {
+                    SharedPreferences prefs = context.getSharedPreferences("app", Context.MODE_PRIVATE);
+                    String token = prefs.getString("token", null);
+                    Request original = chain.request();
+                    Request.Builder builder = original.newBuilder()
+                            .addHeader("Accept", "application/json");
+                    if (token != null) {
+                        builder.addHeader("Authorization", "Bearer " + token);
+                    }
+                    return chain.proceed(builder.build());
+                })
+                .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)   // connection timeout
+                .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)      // read timeout
+                .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)     // write timeout
+                .build();
+    }
+    public static void saveToken(Context context, String token) {
+        SharedPreferences prefs =
+                context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        prefs.edit().putString(TOKEN_KEY, token).apply();
+    }
+    public static void request(
+            String endpoint,
+            String method,
+            JSONObject body,
+            ApiCallback callback
+    ) {
+        if (client == null) {
+            callback.onError("BackendService not initialized");
+            return;
+        }
+        MediaType JSON = MediaType.get("application/json; charset=utf-8");
+        RequestBody requestBody = null;
+        if (body != null) {
+            requestBody = RequestBody.create(body.toString(), JSON);
+        }
+        Request.Builder builder = new Request.Builder()
+                .url(BASE_URL + endpoint);
+        switch (method.toUpperCase()) {
+            case "POST":
+                builder.post(requestBody);
+                break;
+            case "PUT":
+                builder.put(requestBody);
+                break;
+            case "DELETE":
+                if (requestBody != null)
+                    builder.delete(requestBody);
+                else
+                    builder.delete();
+                break;
+            default:
+                builder.get();
+                break;
+        }
+        client.newCall(builder.build()).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onError(e.getMessage());
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseString = response.body() != null ? response.body().string() : "";
+                if (response.isSuccessful()) {
+                    try {
+                        JSONObject obj = new JSONObject(responseString);
+                        // do something with obj
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        callback.onError("JSON parse error: " + e.getMessage());
+                        return;
+                    }
+                    try {
+                        callback.onSuccess(responseString);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    callback.onError("Code: " + response.code() + " | " + responseString);
+                }
+            }
+        });
+    }
+    public interface ApiCallback {
+        void onSuccess(String response) throws JSONException;
+        void onError(String error);
+    }
+}
+//implementation("com.squareup.okhttp3:okhttp:4.12.0")
+//implementation("com.google.code.gson:gson:2.10.1")  
+//<uses-permission android:name="android.permission.INTERNET"/>
+//Example:
+//try {
+//Backend.init(this);
+//   JSONObject json = new JSONObject();
+//                    json.put("id", myEditText.getText().toString());
+//                    json.put("password", myEditTextPassword.getText().toString());
+//                    Backend.request("/auth/signin", "POST", json,
+//                            new Backend.ApiCallback() {
+//                                @Override
+//                                public void onSuccess(String response) throws JSONException {
+//                                    Log.d("mainact", "success"+response);
+//                                    JSONObject obj = new JSONObject(response);
+//                                    String token = obj.getString("accessToken");
+//                                }
+//                                @Override
+//                                public void onError(String error) {
+//                                    Log.d("mainact", "error"+error);
+//                                }
+//                            });
+//} catch (Exception e) {log.d("tag", e.toString()) }`;
 
-  const [index, setIndex] = useState(0);
-  const [typed, setTyped] = useState([]);
-  const [correctCount, setCorrectCount] = useState(0);
-  const [wrongCount, setWrongCount] = useState(0);
+  const [index, setIndex] = useState<number>(0);
+  const [typed, setTyped] = useState<{ char: string; correct: boolean }[]>([]);
+  const [correctCount, setCorrectCount] = useState<number>(0);
+  const [wrongCount, setWrongCount] = useState<number>(0);
 
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
-  function displayChar(char) {
+  function displayChar(char: string): string {
     if (char === " ") return "·";
     if (char === "\n") return "↵\n";
+    if (char === "\t") return "⇥";
     return char;
   }
 
-  function handleChange(e) {
+  // Proper whitespace auto-render
+  function consumeWhitespace(startIndex: number) {
+    let newIndex = startIndex;
+    const whitespaceChars: { char: string; correct: boolean }[] = [];
+
+    while (
+      newIndex < fullText.length &&
+      (fullText[newIndex] === " " ||
+        fullText[newIndex] === "\n" ||
+        fullText[newIndex] === "\t")
+    ) {
+      whitespaceChars.push({
+        char: fullText[newIndex],
+        correct: true
+      });
+      newIndex++;
+    }
+
+    if (whitespaceChars.length > 0) {
+      setTyped(prev => [...prev, ...whitespaceChars]);
+    }
+
+    return newIndex;
+  }
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;
     if (!value) return;
 
-    const char = value.slice(-1);
-    if (index >= fullText.length) return;
+    let currentIndex = index;
 
-    const expected = fullText[index];
+    // First consume whitespace and render it
+    currentIndex = consumeWhitespace(currentIndex);
+
+    if (currentIndex >= fullText.length) return;
+
+    const char = value.slice(-1);
+    const expected = fullText[currentIndex];
 
     if (char === expected) {
       setTyped(prev => [...prev, { char: expected, correct: true }]);
@@ -61,7 +197,7 @@ public class Backend {
       setWrongCount(prev => prev + 1);
     }
 
-    setIndex(prev => prev + 1);
+    setIndex(currentIndex + 1);
     e.target.value = "";
   }
 
@@ -70,18 +206,18 @@ public class Backend {
     setTyped([]);
     setCorrectCount(0);
     setWrongCount(0);
-    inputRef.current.focus();
+    inputRef.current?.focus();
   }
 
   useEffect(() => {
-    inputRef.current.focus();
+    inputRef.current?.focus();
   }, []);
 
   const finished = index >= fullText.length;
 
   return (
     <div
-      onClick={() => inputRef.current.focus()}
+      onClick={() => inputRef.current?.focus()}
       style={{
         minHeight: "100vh",
         backgroundColor: "#111",
@@ -90,9 +226,8 @@ public class Backend {
         fontFamily: "monospace"
       }}
     >
-
       <h2 style={{ textAlign: "center" }}>
-        Blind Code Memorization Mode
+        Blind Memorization – Auto Whitespace Visible
       </h2>
 
       <div
@@ -119,11 +254,7 @@ public class Backend {
         ))}
 
         {!finished && (
-          <span
-            style={{
-              borderBottom: "2px solid yellow"
-            }}
-          >
+          <span style={{ borderBottom: "2px solid yellow" }}>
             ▌
           </span>
         )}
@@ -135,7 +266,6 @@ public class Backend {
         )}
       </div>
 
-      {/* Hidden Mobile Input */}
       <input
         ref={inputRef}
         onChange={handleChange}
@@ -165,10 +295,9 @@ public class Backend {
         </button>
       </div>
 
-      <p style={{ textAlign: "center", marginTop: "15px", opacity: 0.6 }}>
-        Tap anywhere to focus. Spaces show as · and new lines as ↵
+      <p style={{ textAlign: "center", opacity: 0.6 }}>
+        Spaces = · | Enter = ↵ | Tab = ⇥ (auto-rendered)
       </p>
-
     </div>
   );
 }
