@@ -1,11 +1,10 @@
 "use client";
-"use client";
 
 import { useState, useEffect, useRef } from "react";
 
 export default function Page() {
-
-  const fullText: string = `import android.content.Context;
+  const fullText: string = `package com.example.appname;
+import android.content.Context;
 import android.content.SharedPreferences;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -143,6 +142,7 @@ public class Backend {
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
+  // Display whitespace symbols
   function displayChar(char: string): string {
     if (char === " ") return "·";
     if (char === "\n") return "↵\n";
@@ -150,7 +150,7 @@ public class Backend {
     return char;
   }
 
-  // Proper whitespace auto-render
+  // Auto-render whitespace immediately after last typed char
   function consumeWhitespace(startIndex: number) {
     let newIndex = startIndex;
     const whitespaceChars: { char: string; correct: boolean }[] = [];
@@ -163,7 +163,7 @@ public class Backend {
     ) {
       whitespaceChars.push({
         char: fullText[newIndex],
-        correct: true
+        correct: true,
       });
       newIndex++;
     }
@@ -181,7 +181,7 @@ public class Backend {
 
     let currentIndex = index;
 
-    // First consume whitespace and render it
+    // Skip spaces before typing new char
     currentIndex = consumeWhitespace(currentIndex);
 
     if (currentIndex >= fullText.length) return;
@@ -198,6 +198,12 @@ public class Backend {
     }
 
     setIndex(currentIndex + 1);
+
+    // Immediately auto-fill trailing whitespace after this char
+    setTimeout(() => {
+      setIndex(prev => consumeWhitespace(prev));
+    }, 0);
+
     e.target.value = "";
   }
 
@@ -223,11 +229,11 @@ public class Backend {
         backgroundColor: "#111",
         color: "white",
         padding: "20px",
-        fontFamily: "monospace"
+        fontFamily: "monospace",
       }}
     >
       <h2 style={{ textAlign: "center" }}>
-        Blind Memorization – Auto Whitespace Visible
+        Blind Code Memorization – Auto Whitespace
       </h2>
 
       <div
@@ -235,10 +241,11 @@ public class Backend {
           backgroundColor: "#1e1e1e",
           padding: "15px",
           borderRadius: "8px",
-          whiteSpace: "pre-wrap",
+          whiteSpace: "pre",
           fontSize: "14px",
           lineHeight: "1.6",
-          minHeight: "250px"
+          minHeight: "250px",
+          overflowX: "auto", // horizontal scroll for long lines
         }}
       >
         {typed.map((item, i) => (
@@ -246,7 +253,7 @@ public class Backend {
             key={i}
             style={{
               backgroundColor: item.correct ? "green" : "red",
-              color: "white"
+              color: "white",
             }}
           >
             {displayChar(item.char)}
@@ -254,9 +261,7 @@ public class Backend {
         ))}
 
         {!finished && (
-          <span style={{ borderBottom: "2px solid yellow" }}>
-            ▌
-          </span>
+          <span style={{ borderBottom: "2px solid yellow" }}>▌</span>
         )}
 
         {finished && (
@@ -266,13 +271,14 @@ public class Backend {
         )}
       </div>
 
+      {/* Hidden input for typing */}
       <input
         ref={inputRef}
         onChange={handleChange}
         autoFocus
         style={{
           opacity: 0,
-          position: "absolute"
+          position: "absolute",
         }}
       />
 
@@ -288,14 +294,15 @@ public class Backend {
             border: "none",
             borderRadius: "6px",
             color: "white",
-            fontSize: "14px"
+            fontSize: "14px",
+            marginRight: "10px",
           }}
         >
           Restart
         </button>
       </div>
 
-      <p style={{ textAlign: "center", opacity: 0.6 }}>
+      <p style={{ textAlign: "center", opacity: 0.6, marginTop: "10px" }}>
         Spaces = · | Enter = ↵ | Tab = ⇥ (auto-rendered)
       </p>
     </div>
