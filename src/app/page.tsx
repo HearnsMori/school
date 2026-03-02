@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 
 export default function Home() {
 
-  const fullText = `package com.example.codea;
+  const fullText = `
+package com.example.codea;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -30,10 +31,12 @@ public class Backend {
 
     private static OkHttpClient client;
 
+    // Initialize once (call in MainActivity onCreate)
     public static void init(Context context) {
 
         client = new OkHttpClient.Builder()
                 .addInterceptor(chain -> {
+                    // JWT header
                     SharedPreferences prefs = context.getSharedPreferences("app", Context.MODE_PRIVATE);
                     String token = prefs.getString("token", null);
 
@@ -47,18 +50,20 @@ public class Backend {
 
                     return chain.proceed(builder.build());
                 })
-                .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-                .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-                .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+                .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)   // connection timeout
+                .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)      // read timeout
+                .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)     // write timeout
                 .build();
     }
 
+    // SAVE TOKEN
     public static void saveToken(Context context, String token) {
         SharedPreferences prefs =
-                context.getSharedPreferences("app", Context.MODE_PRIVATE);
+                context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         prefs.edit().putString(TOKEN_KEY, token).apply();
     }
 
+    // MAIN REQUEST FUNCTION
     public static void request(
             String endpoint,
             String method,
@@ -115,7 +120,20 @@ public class Backend {
                 String responseString = response.body() != null ? response.body().string() : "";
 
                 if (response.isSuccessful()) {
-                    callback.onSuccess(responseString);
+                    try {
+                        JSONObject obj = new JSONObject(responseString);
+                        // do something with obj
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        callback.onError("JSON parse error: " + e.getMessage());
+                        return;
+                    }
+
+                    try {
+                        callback.onSuccess(responseString);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
                 } else {
                     callback.onError("Code: " + response.code() + " | " + responseString);
                 }
@@ -123,11 +141,39 @@ public class Backend {
         });
     }
 
+    // CALLBACK INTERFACE
     public interface ApiCallback {
         void onSuccess(String response) throws JSONException;
         void onError(String error);
     }
-}`;
+}
+
+//implementation("com.squareup.okhttp3:okhttp:4.12.0")
+//implementation("com.google.code.gson:gson:2.10.1")  
+//<uses-permission android:name="android.permission.INTERNET"/>
+//
+//Example Usage:
+//try {
+//Backend.init(this);
+//   JSONObject json = new JSONObject();
+//                    json.put("id", myEditText.getText().toString());
+//                    json.put("password", myEditTextPassword.getText().toString());
+//                    Backend.request("/auth/signin", "POST", json,
+//                            new Backend.ApiCallback() {
+//                                @Override
+//                                public void onSuccess(String response) throws JSONException {
+//                                    Log.d("mainact", "success"+response);
+//                                    JSONObject obj = new JSONObject(response);
+//                                    String token = obj.getString("accessToken");
+//                                }
+//                                @Override
+//                                public void onError(String error) {
+//                                    Log.d("mainact", "error"+error);
+//                                }
+//                            });
+//} catch (Exception e) {log.d("tag", e.toString()) }
+//
+`;
 
   const [hiddenWord, setHiddenWord] = useState("");
   const [displayText, setDisplayText] = useState("");
@@ -141,7 +187,11 @@ public class Backend {
     setHiddenWord(randomWord);
 
     const regex = new RegExp("\\b" + randomWord + "\\b", "g");
-    const blanked = fullText.replace(regex, "_____");
+
+    const blanked = fullText.replace(
+      regex,
+      `<span style="background-color:#ff2e2e;color:white;padding:2px 6px;border-radius:4px;">_____</span>`
+    );
 
     setDisplayText(blanked);
     setInput("");
@@ -152,7 +202,7 @@ public class Backend {
     if (input.trim() === hiddenWord) {
       setScore(score + 1);
       setMessage("Correct! Next word...");
-      setTimeout(generateBlank, 1000);
+      setTimeout(generateBlank, 800);
     } else {
       setMessage("Wrong. Try again.");
     }
@@ -173,19 +223,20 @@ public class Backend {
 
       <h1 style={{ textAlign: "center" }}>Code Memorization Game</h1>
 
-      <div style={{
-        backgroundColor: "#1e1e1e",
-        padding: "20px",
-        borderRadius: "8px",
-        whiteSpace: "pre-wrap",
-        marginBottom: "20px",
-        fontSize: "14px",
-        lineHeight: "1.5",
-        maxHeight: "60vh",
-        overflowY: "auto"
-      }}>
-        {displayText}
-      </div>
+      <div
+        style={{
+          backgroundColor: "#1e1e1e",
+          padding: "20px",
+          borderRadius: "8px",
+          whiteSpace: "pre-wrap",
+          marginBottom: "20px",
+          fontSize: "14px",
+          lineHeight: "1.5",
+          maxHeight: "60vh",
+          overflowY: "auto"
+        }}
+        dangerouslySetInnerHTML={{ __html: displayText }}
+      />
 
       <div style={{ textAlign: "center" }}>
         <input
