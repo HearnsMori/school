@@ -183,6 +183,10 @@ public class Backend {
 
   function generateBlank() {
     const words = fullText.match(/\b[A-Za-z_]+\b/g);
+    if (!words || words.length === 0) {
+        return; // or handle fallback
+    }
+
     const randomWord = words[Math.floor(Math.random() * words.length)];
     setHiddenWord(randomWord);
 
