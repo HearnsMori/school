@@ -1,420 +1,247 @@
 "use client";
 
-import { useState } from "react";
-import {
-  motion,
-  Reorder,
-  AnimatePresence,
-  LayoutGroup,
-} from "framer-motion";
-import {
-  Columns,
-  Layout,
-  Settings2,
-  ArrowUp,
-  ArrowDown,
-  GripVertical,
-  Expand,
-  MoreHorizontal,
-  AlertCircle,
-  RotateCcw,
-  CheckCircle2,
-} from "lucide-react";
+import { useState, useEffect } from "react";
 
-/* ---------------- TYPES ---------------- */
+export default function Home() {
 
-type Field = {
-  id: string;
-  label: string;
-  span: number;
-  value: string;
-  required?: boolean;
-};
+  const fullText = `package com.example.codea;
 
-/* ---------------- DEFAULT LAYOUT (4 COLUMN EXAMPLE) ---------------- */
-/*
-First Name → 2
-Last Name  → 2
-Street 1   → 4
-City       → 3
-State      → 1
-*/
+import android.content.Context;
+import android.content.SharedPreferences;
 
-const defaultFields: Field[] = [
-  { id: "first", label: "First Name", span: 2, value: "", required: true },
-  { id: "last", label: "Last Name", span: 2, value: "", required: true },
-  { id: "street", label: "Street 1", span: 4, value: "", required: true },
-  { id: "city", label: "City", span: 3, value: "", required: true },
-  { id: "state", label: "State / Province", span: 1, value: "", required: true },
-];
+import org.json.JSONException;
+import org.json.JSONObject;
 
-export default function Page() {
-  /* ---------------- STATE ---------------- */
+import java.io.IOException;
 
-  const [snap, setSnap] = useState(true);
-  const [columns, setColumns] = useState(4);
-  const [horizontal, setHorizontal] = useState(false);
-  const [rowHeight, setRowHeight] = useState(90);
-  const [fields, setFields] = useState<Field[]>(defaultFields);
-  const [status, setStatus] = useState<"idle" | "success" | "failure">("idle");
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
-  /* ---------------- FORM LIFECYCLE ---------------- */
+public class Backend {
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+    private static final String BASE_URL = "https://dbstorage.onrender.com";
+    private static final String PREF_NAME = "app";
+    private static final String TOKEN_KEY = "token";
 
-    const invalid = fields.some(
-      (f) => f.required && f.value.trim() === ""
-    );
+    private static OkHttpClient client;
 
-    if (invalid) {
-      setStatus("failure");
-    } else {
-      setStatus("success");
-    }
-  };
+    public static void init(Context context) {
 
-  const handleReset = () => {
-    setFields(defaultFields);
-    setSnap(true);
-    setColumns(4);
-    setHorizontal(false);
-    setRowHeight(90);
-    setStatus("idle");
-  };
+        client = new OkHttpClient.Builder()
+                .addInterceptor(chain -> {
+                    SharedPreferences prefs = context.getSharedPreferences("app", Context.MODE_PRIVATE);
+                    String token = prefs.getString("token", null);
 
-  /* ---------------- MOVE UP / DOWN ---------------- */
+                    Request original = chain.request();
+                    Request.Builder builder = original.newBuilder()
+                            .addHeader("Accept", "application/json");
 
-  const moveField = (index: number, direction: "up" | "down") => {
-    const newFields = [...fields];
-    const target =
-      direction === "up" ? index - 1 : index + 1;
-
-    if (target < 0 || target >= fields.length) return;
-
-    [newFields[index], newFields[target]] =
-      [newFields[target], newFields[index]];
-
-    setFields(newFields);
-  };
-
-  /* ---------------- STYLES ---------------- */
-
-  const container: React.CSSProperties = {
-    minHeight: "100vh",
-    padding: "40px",
-    background: "#f3f4f6",
-    fontFamily: "Inter, sans-serif",
-    color: "black",
-  };
-
-  const grid: React.CSSProperties = {
-    display: "grid",
-    gridTemplateColumns: `repeat(${columns}, 1fr)`,
-    gap: "16px",
-    background: "#fff",
-    padding: "30px",
-    borderRadius: 18,
-    boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-  };
-
-  const card = (span: number): React.CSSProperties => ({
-    gridColumn: snap
-      ? `span ${span}`
-      : `span ${Math.min(span + 1, columns)}`,
-    background: "#ffffff",
-    border: "1px solid #e5e7eb",
-    borderRadius: 14,
-    padding: 16,
-    height: rowHeight,
-    display: "flex",
-    flexDirection: horizontal ? "row" : "column",
-    justifyContent: "center",
-    gap: 8,
-    boxShadow: "0 6px 16px rgba(0,0,0,0.05)",
-  });
-
-  const inputStyle: React.CSSProperties = {
-    flex: 1,
-    padding: 8,
-    borderRadius: 8,
-    border: "1px solid #d1d5db",
-  };
-
-  /* ---------------- UI ---------------- */
-
-  return (
-    <div style={container}>
-      <LayoutGroup>
-
-        <motion.h1 layout style={{ fontSize: 30, fontWeight: 700 }}>
-          Designing the Form Control
-        </motion.h1>
-
-        <motion.p layout style={{ marginBottom: 20, color: "#6b7280" }}>
-          Choose Snap to Columns, Columns (4 / 6 / 12), Layout direction,
-          reorder via drag-and-drop or Move Up/Down, and adjust row height.
-          6 or 12 columns provide the most sizing flexibility.
-        </motion.p>
-
-        {/* STATUS */}
-        <AnimatePresence>
-          {status !== "idle" && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              style={{
-                padding: 14,
-                borderRadius: 10,
-                marginBottom: 20,
-                display: "flex",
-                gap: 8,
-                alignItems: "center",
-                background:
-                  status === "failure" ? "#fee2e2" : "#dcfce7",
-                color:
-                  status === "failure" ? "#b91c1c" : "#166534",
-              }}
-            >
-              {status === "failure" ? (
-                <>
-                  <AlertCircle size={18} />
-                  onFailure: Required fields missing.
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 size={18} />
-                  Form Submitted Successfully.
-                </>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* CONTROL PANEL */}
-        <div style={{
-          background: "#fff",
-          padding: 20,
-          borderRadius: 16,
-          marginBottom: 30,
-          boxShadow: "0 8px 20px rgba(0,0,0,0.08)",
-          display: "flex",
-          gap: 30,
-          flexWrap: "wrap"
-        }}>
-          <Control
-            icon={<Settings2 size={18} />}
-            label="Snap to Columns"
-          >
-            <button
-              onClick={() => setSnap(!snap)}
-              style={buttonStyle(snap)}
-            >
-              {snap ? "Locked Width" : "Flexible Width"}
-            </button>
-          </Control>
-
-          <Control icon={<Columns size={18} />} label="Columns">
-            <select
-              value={columns}
-              onChange={(e) => setColumns(Number(e.target.value))}
-              style={selectStyle}
-            >
-              <option value={4}>4 Columns</option>
-              <option value={6}>6 Columns</option>
-              <option value={12}>12 Columns</option>
-            </select>
-          </Control>
-
-          <Control icon={<Layout size={18} />} label="Layout">
-            <button
-              onClick={() => setHorizontal(!horizontal)}
-              style={buttonStyle(horizontal)}
-            >
-              {horizontal ? "Horizontal" : "Vertical"}
-            </button>
-          </Control>
-
-          <Control icon={<Expand size={18} />} label="Row Height">
-            <input
-              type="range"
-              min={70}
-              max={160}
-              value={rowHeight}
-              onChange={(e) =>
-                setRowHeight(Number(e.target.value))
-              }
-            />
-          </Control>
-        </div>
-
-        {/* FORM */}
-        <form onSubmit={handleSubmit} onReset={handleReset}>
-          <Reorder.Group
-            axis="y"
-            values={fields}
-            onReorder={setFields}
-            style={grid}
-          >
-            <AnimatePresence>
-              {fields.map((field, index) => (
-                <Reorder.Item
-                  key={field.id}
-                  value={field}
-                  layout
-                  style={card(field.span)}
-                >
-                  <div style={{ display: "flex", gap: 6 }}>
-                    <GripVertical size={16} />
-                    <strong>{field.label}</strong>
-                    <MoreHorizontal size={16} />
-                  </div>
-
-                  <input
-                    style={inputStyle}
-                    placeholder={`Enter ${field.label}`}
-                    value={field.value}
-                    onChange={(e) =>
-                      setFields((prev) =>
-                        prev.map((f) =>
-                          f.id === field.id
-                            ? { ...f, value: e.target.value }
-                            : f
-                        )
-                      )
+                    if (token != null) {
+                        builder.addHeader("Authorization", "Bearer " + token);
                     }
-                  />
 
-                  {/* Span + Move Controls */}
-                  <div style={{ display: "flex", gap: 6 }}>
-                    <button
-                      type="button"
-                      onClick={() => moveField(index, "up")}
-                      style={miniBtn}
-                    >
-                      <ArrowUp size={14} />
-                    </button>
+                    return chain.proceed(builder.build());
+                })
+                .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+                .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+                .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+                .build();
+    }
 
-                    <button
-                      type="button"
-                      onClick={() => moveField(index, "down")}
-                      style={miniBtn}
-                    >
-                      <ArrowDown size={14} />
-                    </button>
+    public static void saveToken(Context context, String token) {
+        SharedPreferences prefs =
+                context.getSharedPreferences("app", Context.MODE_PRIVATE);
+        prefs.edit().putString(TOKEN_KEY, token).apply();
+    }
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setFields((prev) =>
-                          prev.map((f) =>
-                            f.id === field.id && f.span < columns
-                              ? { ...f, span: f.span + 1 }
-                              : f
-                          )
-                        )
-                      }
-                      style={miniBtn}
-                    >
-                      +
-                    </button>
+    public static void request(
+            String endpoint,
+            String method,
+            JSONObject body,
+            ApiCallback callback
+    ) {
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setFields((prev) =>
-                          prev.map((f) =>
-                            f.id === field.id && f.span > 1
-                              ? { ...f, span: f.span - 1 }
-                              : f
-                          )
-                        )
-                      }
-                      style={miniBtn}
-                    >
-                      −
-                    </button>
-                  </div>
-                </Reorder.Item>
-              ))}
-            </AnimatePresence>
-          </Reorder.Group>
+        if (client == null) {
+            callback.onError("BackendService not initialized");
+            return;
+        }
 
-          {/* ACTIONS */}
-          <div style={{ marginTop: 30, display: "flex", gap: 12 }}>
-            <button type="submit" style={primaryBtn}>
-              Submit
-            </button>
+        MediaType JSON = MediaType.get("application/json; charset=utf-8");
+        RequestBody requestBody = null;
 
-            <button
-              type="reset"
-              style={{ ...primaryBtn, background: "#6b7280" }}
-            >
-              <RotateCcw size={14} /> Reset
-            </button>
-          </div>
-        </form>
-      </LayoutGroup>
-    </div>
-  );
-}
+        if (body != null) {
+            requestBody = RequestBody.create(body.toString(), JSON);
+        }
 
-/* ---------------- SMALL COMPONENT ---------------- */
+        Request.Builder builder = new Request.Builder()
+                .url(BASE_URL + endpoint);
 
-function Control({
-  icon,
-  label,
-  children,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  children: React.ReactNode;
-}) {
+        switch (method.toUpperCase()) {
+
+            case "POST":
+                builder.post(requestBody);
+                break;
+
+            case "PUT":
+                builder.put(requestBody);
+                break;
+
+            case "DELETE":
+                if (requestBody != null)
+                    builder.delete(requestBody);
+                else
+                    builder.delete();
+                break;
+
+            default:
+                builder.get();
+                break;
+        }
+
+        client.newCall(builder.build()).enqueue(new Callback() {
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onError(e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseString = response.body() != null ? response.body().string() : "";
+
+                if (response.isSuccessful()) {
+                    callback.onSuccess(responseString);
+                } else {
+                    callback.onError("Code: " + response.code() + " | " + responseString);
+                }
+            }
+        });
+    }
+
+    public interface ApiCallback {
+        void onSuccess(String response) throws JSONException;
+        void onError(String error);
+    }
+}`;
+
+  const [hiddenWord, setHiddenWord] = useState("");
+  const [displayText, setDisplayText] = useState("");
+  const [input, setInput] = useState("");
+  const [message, setMessage] = useState("");
+  const [score, setScore] = useState(0);
+
+  function generateBlank() {
+    const words = fullText.match(/\b[A-Za-z_]+\b/g);
+    const randomWord = words[Math.floor(Math.random() * words.length)];
+    setHiddenWord(randomWord);
+
+    const regex = new RegExp("\\b" + randomWord + "\\b", "g");
+    const blanked = fullText.replace(regex, "_____");
+
+    setDisplayText(blanked);
+    setInput("");
+    setMessage("");
+  }
+
+  function checkAnswer() {
+    if (input.trim() === hiddenWord) {
+      setScore(score + 1);
+      setMessage("Correct! Next word...");
+      setTimeout(generateBlank, 1000);
+    } else {
+      setMessage("Wrong. Try again.");
+    }
+  }
+
+  useEffect(() => {
+    generateBlank();
+  }, []);
+
   return (
-    <div>
-      <div style={{ display: "flex", gap: 6 }}>
-        {icon}
-        <strong>{label}</strong>
+    <div style={{
+      minHeight: "100vh",
+      backgroundColor: "#111",
+      color: "white",
+      padding: "20px",
+      fontFamily: "monospace"
+    }}>
+
+      <h1 style={{ textAlign: "center" }}>Code Memorization Game</h1>
+
+      <div style={{
+        backgroundColor: "#1e1e1e",
+        padding: "20px",
+        borderRadius: "8px",
+        whiteSpace: "pre-wrap",
+        marginBottom: "20px",
+        fontSize: "14px",
+        lineHeight: "1.5",
+        maxHeight: "60vh",
+        overflowY: "auto"
+      }}>
+        {displayText}
       </div>
-      <div style={{ marginTop: 8 }}>{children}</div>
+
+      <div style={{ textAlign: "center" }}>
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Type missing word"
+          style={{
+            padding: "10px",
+            fontSize: "16px",
+            width: "250px",
+            marginRight: "10px",
+            borderRadius: "5px",
+            border: "none"
+          }}
+        />
+
+        <button
+          onClick={checkAnswer}
+          style={{
+            padding: "10px 20px",
+            fontSize: "16px",
+            cursor: "pointer",
+            borderRadius: "5px",
+            border: "none",
+            backgroundColor: "#4CAF50",
+            color: "white"
+          }}
+        >
+          Check
+        </button>
+      </div>
+
+      <p style={{ textAlign: "center", marginTop: "15px" }}>
+        {message}
+      </p>
+
+      <p style={{ textAlign: "center", marginTop: "10px" }}>
+        Score: {score}
+      </p>
+
+      <div style={{ textAlign: "center", marginTop: "20px" }}>
+        <button
+          onClick={generateBlank}
+          style={{
+            padding: "8px 15px",
+            backgroundColor: "#2196F3",
+            border: "none",
+            borderRadius: "5px",
+            color: "white",
+            cursor: "pointer"
+          }}
+        >
+          New Word
+        </button>
+      </div>
+
     </div>
   );
 }
-
-/* ---------------- STYLES ---------------- */
-
-const buttonStyle = (active: boolean): React.CSSProperties => ({
-  padding: "8px 14px",
-  borderRadius: 8,
-  border: "none",
-  cursor: "pointer",
-  background: active ? "#4f46e5" : "#9ca3af",
-  color: "white",
-});
-
-const primaryBtn: React.CSSProperties = {
-  padding: "10px 18px",
-  borderRadius: 10,
-  border: "none",
-  background: "#4f46e5",
-  color: "white",
-  cursor: "pointer",
-  fontWeight: 600,
-  display: "flex",
-  alignItems: "center",
-  gap: 6,
-};
-
-const miniBtn: React.CSSProperties = {
-  padding: 6,
-  borderRadius: 6,
-  border: "1px solid #d1d5db",
-  background: "#f9fafb",
-  cursor: "pointer",
-};
-
-const selectStyle: React.CSSProperties = {
-  padding: 8,
-  borderRadius: 8,
-};
