@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 
 export default function Page() {
-  const fullText: string = `import android.content.Context;
+  const fullText: string = `package com.example.appname;
+import android.content.Context;
 import android.content.SharedPreferences;
 import org.json.JSONException;
 import org.json.JSONObject;
