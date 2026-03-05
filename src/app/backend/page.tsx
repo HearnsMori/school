@@ -174,7 +174,7 @@ public class Backend {
       (
         //fullText[newIndex] === " " ||
         //fullText[newIndex] === "\n" ||
-        fullText[newIndex] === "\t"
+        fullText[newIndex] === "  "
       )
     ) {
       whitespaceChars.push({
@@ -195,6 +195,8 @@ public class Backend {
     var value = (e.target as HTMLInputElement).value;
     if ('key' in e && e.key === 'Enter') {
         value = "\n";
+    } else if ('key' in e && e.key === 'Tab') {
+        value = "\t";
     }
     if (!value) return;
 
