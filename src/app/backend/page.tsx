@@ -156,7 +156,7 @@ public class Backend {
 
   // Display whitespace symbols
   function displayChar(char: string): string {
-    if (char === "  ") return "··";
+    if (char === " ") return "·";
     if (char === "\n") return "↵\n";
     if (char === "\t") return "⇥";
     return char;
@@ -169,9 +169,9 @@ public class Backend {
 
     while (
       newIndex < fullText.length &&
-      (fullText[newIndex] === "  " ||
-        fullText[newIndex] === "\n" ||
-        fullText[newIndex] === "\t")
+      (//fullText[newIndex] === " " ||
+        //fullText[newIndex] === "\n" ||
+        fullText[newIndex] === "fhf")
     ) {
       whitespaceChars.push({
         char: fullText[newIndex],
@@ -193,7 +193,7 @@ public class Backend {
 
     let currentIndex = index;
     
-    //currentIndex = consumeWhitespace(currentIndex);
+    currentIndex = consumeWhitespace(currentIndex);
 
     if (currentIndex >= fullText.length) return;
 
