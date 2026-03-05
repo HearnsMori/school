@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 
+type ChangeOrKeyboardEvent = React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>;
+
 export default function Page() {
   const fullText: string = `package com.example.appname;
 import android.content.Context;
@@ -189,7 +191,7 @@ public class Backend {
     return newIndex;
   }
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleChange(e: ChangeOrKeyboardEvent) {
     var value = e.target.value;
     if (e.key === 'Enter') {
         value = "\n";
