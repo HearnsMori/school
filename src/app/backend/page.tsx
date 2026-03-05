@@ -231,7 +231,7 @@ public class Backend {
       setIndex(prev => consumeWhitespace(prev));
     }, 0);
 
-    e.target.value = "";
+    (e.target as HTMLInputElement).value = "";
   }
 
   function resetGame() {
