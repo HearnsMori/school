@@ -174,7 +174,8 @@ public class Backend {
       (
         //fullText[newIndex] === " " ||
         //fullText[newIndex] === "\n" ||
-        fullText[newIndex]+fullText[newIndex+1] === "  "
+        fullText[newIndex]+fullText[newIndex+1] === "  " ||
+        fullText[newIndex-1]+fullText[newIndex] === "  "
       )
     ) {
       whitespaceChars.push({
