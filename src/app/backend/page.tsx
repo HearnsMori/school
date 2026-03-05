@@ -169,9 +169,11 @@ public class Backend {
 
     while (
       newIndex < fullText.length &&
-      (//fullText[newIndex] === " " ||
+      (
+        //fullText[newIndex] === " " ||
         //fullText[newIndex] === "\n" ||
-        fullText[newIndex] === "fhf")
+        fullText[newIndex] === "\t"
+      )
     ) {
       whitespaceChars.push({
         char: fullText[newIndex],
@@ -188,7 +190,10 @@ public class Backend {
   }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const value = e.target.value;
+    var value = e.target.value;
+    if (e.key === 'Enter') {
+        value = "\n";
+    }
     if (!value) return;
 
     let currentIndex = index;
@@ -204,8 +209,17 @@ public class Backend {
       setTyped(prev => [...prev, { char: expected, correct: true }]);
       setCorrectCount(prev => prev + 1);
     } else {
-      setTyped(prev => [...prev, { char: expected, correct: false }]);
-      setWrongCount(prev => prev + 1);
+      if(
+        expected === " " ||
+        expected === "\n" ||
+        expected === "\t"
+      ) {
+        setTyped(prev => [...prev, { char: expected, correct: false }]);
+        setWrongCount(prev => prev + 1);
+      } else {
+        setTyped(prev => [...prev, { char: expected, correct: false }]);
+        setWrongCount(prev => prev + 1);
+      }
     }
 
     setIndex(currentIndex + 1);
@@ -286,6 +300,7 @@ public class Backend {
       <input
         ref={inputRef}
         onChange={handleChange}
+        onKeyDown={handleChange}
         autoFocus
         style={{
           opacity: 0,
