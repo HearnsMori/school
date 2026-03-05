@@ -192,8 +192,8 @@ public class Backend {
   }
 
   function handleChange(e: ChangeOrKeyboardEvent) {
-    var value = e.target.value;
-    if (e.key === 'Enter') {
+    var value = (e.target as HTMLInputElement).value;
+    if ('key' in e && e.key === 'Enter') {
         value = "\n";
     }
     if (!value) return;
