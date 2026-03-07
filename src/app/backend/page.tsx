@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next-navigation";
 import { useState, useEffect, useRef } from "react";
 
 type ChangeOrKeyboardEvent = React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>;
@@ -140,8 +141,10 @@ public class Backend {
 //} catch (Exception e) {
 //	log.d("okhttp", e.toString())
 //}`;
-
-  const [index, setIndex] = useState<number>(0);
+  const sp = useSearchParams();
+  var i = Number(searchParams.get("i"));
+  i = Number.isNaN(i) ? 0 : i;
+  const [index, setIndex] = useState<number>(i);
   const [typed, setTyped] = useState<{ char: string; correct: boolean }[]>([]);
   const [correctCount, setCorrectCount] = useState<number>(0);
   const [wrongCount, setWrongCount] = useState<number>(0);
