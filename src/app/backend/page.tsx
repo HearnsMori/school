@@ -5,7 +5,10 @@ import { useState, useEffect, useRef } from "react";
 type ChangeOrKeyboardEvent = React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>;
 
 export default function Page() {
-  const fullText: string = `package com.example.appname;
+  const fullText: string = `//implementation("com.squareup.okhttp3:okhttp:4.12.0")
+//implementation("com.google.code.gson:gson:2.10.1")  
+//<uses-permission android:name="android.permission.INTERNET"/>
+package com.example.appname;
 import android.content.Context;
 import android.content.SharedPreferences;
 import org.json.JSONException;
@@ -112,9 +115,6 @@ public class Backend {
 		void onError(String error);
     }
 }
-//implementation("com.squareup.okhttp3:okhttp:4.12.0")
-//implementation("com.google.code.gson:gson:2.10.1")  
-//<uses-permission android:name="android.permission.INTERNET"/>
 //private static String id;
 //Backend.init(this);
 //try {
