@@ -34,7 +34,7 @@ public class Backend {
         	SharedPreferences prefs = context.getSharedPreferences("app", Context.MODE_PRIVATE);
             String token = prefs.getString("token", null);
             Request original = chain.request();
-            Request.Builder builder = original.newBuilder.addHeader("Accept", "application/json");
+            Request.Builder builder = original.newBuilder().addHeader("Accept", "application/json");
             if (token != null) {
                 builder.addHeader("Authorization", "Bearer " + token);
             }
