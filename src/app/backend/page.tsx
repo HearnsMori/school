@@ -6,7 +6,7 @@ type ChangeOrKeyboardEvent = React.ChangeEvent<HTMLInputElement> | React.Keyboar
 
 export default function Page() {
   const fullText: string = `//implementation("com.squareup.okhttp3:okhttp:4.12.0")
-//implementation("com.google.code.gson:gson:2.10.1")  
+//implementation("com.google.code.gson:gson:2.10.1")
 //<uses-permission android:name="android.permission.INTERNET"/>
 package com.example.appname;
 import android.content.Context;
@@ -165,7 +165,7 @@ public class Backend {
       newIndex < fullText.length &&
       (
         //fullText[newIndex] === " " ||
-        //fullText[newIndex] === "\n" ||
+        fullText[newIndex] === "\t" ||
         fullText[newIndex]+fullText[newIndex+1] === "  " ||
         fullText[newIndex-1]+fullText[newIndex] === "  "
       )
