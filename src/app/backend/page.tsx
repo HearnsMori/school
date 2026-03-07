@@ -142,7 +142,7 @@ public class Backend {
 //	log.d("okhttp", e.toString())
 //}`;
   const sp = useSearchParams();
-  var i = Number(searchParams.get("i"));
+  var i = Number(sp.get("i"));
   i = Number.isNaN(i) ? 0 : i;
   const [index, setIndex] = useState<number>(i);
   const [typed, setTyped] = useState<{ char: string; correct: boolean }[]>([]);
