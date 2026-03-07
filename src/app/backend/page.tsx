@@ -152,7 +152,7 @@ public class Backend {
   function displayChar(char: string): string {
     if (char === " ") return "·";
     if (char === "\n") return "↵\n";
-    if (char === "\t") return "⇥";
+    if (char === "\t") return "····";
     return char;
   }
 
