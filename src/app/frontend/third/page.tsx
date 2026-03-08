@@ -109,6 +109,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
       newIndex < fullText.length &&
       (
         fullText[newIndex]+fullText[newIndex+1] === "//" ||
+        fullText[newIndex-1]+fullText[newIndex] === "//" ||
         fullText[newIndex] === "\t" ||
         fullText[newIndex]+fullText[newIndex+1] === "  " ||
         fullText[newIndex-1]+fullText[newIndex] === "  "
