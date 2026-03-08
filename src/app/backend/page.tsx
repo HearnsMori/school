@@ -56,7 +56,7 @@ public class Backend {
         ApiCallback callback
     ) {
         if (client == null) {
-            callback.onError("init backend");
+            callback.onError("init error");
             return;
         }
         MediaType JSON = MediaType.get("application/json; charset=utf-8");
@@ -93,10 +93,9 @@ public class Backend {
                 if (response.isSuccessful()) {
                     try {
                         JSONObject obj = new JSONObject(responseString);
-                        // do something with obj
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        callback.onError("JSON parse error: " + e.getMessage());
+                        callback.onError(e.getMessage());
                         return;
                     }
                     try {
@@ -105,7 +104,7 @@ public class Backend {
                         throw new RuntimeException(e);
                     }
                 } else {
-                    callback.onError("Code: " + response.code() + " | " + responseString);
+                    callback.onError(response.code() + " | " + responseString);
                 }
             }
         });
@@ -205,7 +204,7 @@ public class Backend {
     while (
       newIndex < fullText.length &&
       (
-        //fullText[newIndex] === " " ||
+        fullText[newIndex]+fullText[newIndex+1] === "//" ||
         fullText[newIndex] === "\t" ||
         fullText[newIndex]+fullText[newIndex+1] === "  " ||
         fullText[newIndex-1]+fullText[newIndex] === "  "
