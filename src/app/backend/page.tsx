@@ -138,48 +138,7 @@ public class Backend {
 //  );
 //} catch (Exception e) {
 //	log.d("okhttp", e.toString())
-//}
-//implementation ("androidx.appcompat:appcompat:1.6.1")
-//implementation ("com.google.android.material:material:1.11.0")
-//implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
-//implementation ("androidx.recyclerview:recyclerview:1.3.2")
-//implementation ("androidx.core:core:1.12.0")
-//<style name="Theme.MyApp" parent="Theme.Material3.DayNight.NoActionBar"/>
-//<application android:theme="@style/Theme.MyApp">
-//repositories {
-//	google()
-//	mavenCentral()
-//}
-<?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
-	<solid android:color="#FFFFFF"/>
-    <gradient
-        android:startColor="#FF6F00"
-        android:centerColor="#FFA000"
-        android:endColor="#FFD54F"
-        android:angle="45"
-        android:type="linear"
-        android:gradientRadius="200dp"/>
-    <stroke
-        android:width="3dp"
-        android:color="#EEEEEE"
-        android:dashWidth="6dp"
-        android:dashGap="4dp"/>
-    <corners
-        android:radius="16dp"
-        android:topLeftRadius="24dp"
-        android:topRightRadius="24dp"
-        android:bottomLeftRadius="8dp"
-        android:bottomRightRadius="8dp"/>
-    <padding
-        android:left="12dp"
-        android:top="12dp"
-        android:right="12dp"
-        android:bottom="12dp"/>
-    <size
-        android:width="200dp"
-        android:height="120dp"/>
-</shape>`;
+//}`;
   
   const [index, setIndex] = useState<number>(0);
   const [typed, setTyped] = useState<{ char: string; correct: boolean }[]>([]);
