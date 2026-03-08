@@ -5,51 +5,7 @@ import { useState, useEffect, useRef } from "react";
 type ChangeOrKeyboardEvent = React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>;
 
 export default function Page() {
-  const fullText: string = `//implementation("com.squareup.okhttp3:okhttp:4.12.0")
-//implementation("com.google.code.gson:gson:2.10.1")
-//<uses-permission android:name="android.permission.INTERNET"/>
-package com.example.appname;
-import android.content.Context;
-import android.content.SharedPreferences;
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.io.IOException;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-public class Backend {
-    private static final String server1 = "https://dbstorage.onrender.com";
-    private static final String server2 = "https://dbstorage.vercel.app";
-    private static final String server3 = "https://dbstorage-production.up.railway.app";
-    private static final String BASE_URL = server1;
-    private static final String PREF_NAME = "app";
-    private static final String TOKEN_KEY = "token";
-    private static OkHttpClient client;
-	public static void init(Context context) {
-    	client = new OkHttpClient.Builder().addInterceptor(chain -> {
-        	SharedPreferences prefs = context.getSharedPreferences("app", Context.MODE_PRIVATE);
-            String token = prefs.getString("token", null);
-            Request original = chain.request();
-            Request.Builder builder = original.newBuilder().addHeader("Accept", "application/json");
-            if (token != null) {
-                builder.addHeader("Authorization", "Bearer " + token);
-            }
-            return chain.proceed(builder.build());
-        })
-        .connectTimeout(137, java.util.concurrent.TimeUnit.SECONDS)
-        .readTimeout(137, java.util.concurrent.TimeUnit.SECONDS)
-        .writeTimeout(137, java.util.concurrent.TimeUnit.SECONDS)
-        .build();
-    }
-    public static void saveToken(Context context, String token) {
-        SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        prefs.edit().putString(TOKEN_KEY, token).apply();
-    }
-    public static void request(
+  const fullText: string = `public static void request(
         String endpoint,
         String method,
         JSONObject body,
@@ -113,32 +69,7 @@ public class Backend {
 		void onSuccess(String response) throws JSONException;
 		void onError(String error);
     }
-}
-//private static String id;
-//Backend.init(this);
-//try {
-//	JSONObject obj = new JSONObject();
-//	json.put("id", et.getText().toString());
-//	json.put("password", etp.getText().toString());
-//	Backend.request("/auth/signin", "POST", obj,
-//		new Backend.ApiCallback() {
-//			@Override
-//			public void onSuccess(String response) throws JSONException {
-//			  Log.d("okhttp", "Success: " + response);
-//			  JSONObject obj = new JSONObject(response);
-//        id = obj.getString("id");
-//				String token = obj.getString("accessToken");
-//        Backend.saveToken(MainActivity.this, token);
-//			}
-//			@Override
-//			public void onError(String error) {
-//				Log.d("okhttp", "Error: " + error);
-//			}
-//	  }
-//  ); 
-//} catch (Exception e) {
-//	Log.d("okhttp", "Error: " + e.toString());
-//}`;
+}`;
   
   const [index, setIndex] = useState<number>(0);
   const [typed, setTyped] = useState<{ char: string; correct: boolean }[]>([]);

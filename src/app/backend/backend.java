@@ -1,3 +1,6 @@
+//implementation("com.squareup.okhttp3:okhttp:4.12.0")
+//implementation("com.google.code.gson:gson:2.10.1")
+//<uses-permission android:name="android.permission.INTERNET"/>
 package com.example.appname;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,41 +15,41 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 public class Backend {
-    private static final String BASE_URL = "https://dbstorage.onrender.com";
+    private static final String server1 = "https://dbstorage.onrender.com";
+    private static final String server2 = "https://dbstorage.vercel.app";
+    private static final String server3 = "https://dbstorage-production.up.railway.app";
+    private static final String BASE_URL = server1;
     private static final String PREF_NAME = "app";
     private static final String TOKEN_KEY = "token";
     private static OkHttpClient client;
-    public static void init(Context context) {
-        client = new OkHttpClient.Builder()
-            .addInterceptor(chain -> {
-                SharedPreferences prefs = context.getSharedPreferences("app", Context.MODE_PRIVATE);
-                String token = prefs.getString("token", null);
-                Request original = chain.request();
-                Request.Builder builder = original.newBuilder()
-                    .addHeader("Accept", "application/json");
-                if (token != null) {
-                    builder.addHeader("Authorization", "Bearer " + token);
-                }
-                return chain.proceed(builder.build());
-            })
-        .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-            .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-            .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-            .build();
+	public static void init(Context context) {
+    	client = new OkHttpClient.Builder().addInterceptor(chain -> {
+        	SharedPreferences prefs = context.getSharedPreferences("app", Context.MODE_PRIVATE);
+            String token = prefs.getString("token", null);
+            Request original = chain.request();
+            Request.Builder builder = original.newBuilder().addHeader("Accept", "application/json");
+            if (token != null) {
+                builder.addHeader("Authorization", "Bearer " + token);
+            }
+            return chain.proceed(builder.build());
+        })
+        .connectTimeout(137, java.util.concurrent.TimeUnit.SECONDS)
+        .readTimeout(137, java.util.concurrent.TimeUnit.SECONDS)
+        .writeTimeout(137, java.util.concurrent.TimeUnit.SECONDS)
+        .build();
     }
     public static void saveToken(Context context, String token) {
-        SharedPreferences prefs =
-            context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         prefs.edit().putString(TOKEN_KEY, token).apply();
     }
     public static void request(
-            String endpoint,
-            String method,
-            JSONObject body,
-            ApiCallback callback
-            ) {
+        String endpoint,
+        String method,
+        JSONObject body,
+        ApiCallback callback
+    ) {
         if (client == null) {
-            callback.onError("Backend not initialized");
+            callback.onError("Error: backend not init");
             return;
         }
         MediaType JSON = MediaType.get("application/json; charset=utf-8");
@@ -54,8 +57,7 @@ public class Backend {
         if (body != null) {
             requestBody = RequestBody.create(body.toString(), JSON);
         }
-        Request.Builder builder = new Request.Builder()
-            .url(BASE_URL + endpoint);
+        Request.Builder builder = new Request.Builder().url(BASE_URL + endpoint);
         switch (method.toUpperCase()) {
             case "POST":
                 builder.post(requestBody);
@@ -84,10 +86,9 @@ public class Backend {
                 if (response.isSuccessful()) {
                     try {
                         JSONObject obj = new JSONObject(responseString);
-                        // do something with obj
                     } catch (JSONException e) {
                         e.printStackTrace();
-                        callback.onError("JSON parse error: " + e.getMessage());
+                        callback.onError(e.getMessage());
                         return;
                     }
                     try {
@@ -96,49 +97,38 @@ public class Backend {
                         throw new RuntimeException(e);
                     }
                 } else {
-                    callback.onError("Code: " + response.code() + " | " + responseString);
+                    callback.onError(response.code() + " | " + responseString);
                 }
             }
         });
-            }
+    }
     public interface ApiCallback {
-        void onSuccess(String response) throws JSONException;
-        void onError(String error);
+		void onSuccess(String response) throws JSONException;
+		void onError(String error);
     }
 }
-//implementation("com.squareup.okhttp3:okhttp:4.12.0")
-//implementation("com.google.code.gson:gson:2.10.1")  
-//<uses-permission android:name="android.permission.INTERNET"/>
+//private static String id;
 //Backend.init(this);
 //try {
-//	JSONObject json = new JSONObject();
-//	json.put("id", myEditText.getText().toString());
-//	json.put("password", myEditTextPassword.getText().toString());
-//	Backend.request("/auth/signin", "POST", json,
+//	JSONObject obj = new JSONObject();
+//	json.put("id", et.getText().toString());
+//	json.put("password", etp.getText().toString());
+//	Backend.request("/auth/signin", "POST", obj,
 //		new Backend.ApiCallback() {
 //			@Override
 //			public void onSuccess(String response) throws JSONException {
-//				Log.d("okhttp", "success: "+response);
-//				JSONObject obj = new JSONObject(response);
+//			  Log.d("okhttp", "Success: " + response);
+//			  JSONObject obj = new JSONObject(response);
+//        id = obj.getString("id");
 //				String token = obj.getString("accessToken");
+//        Backend.saveToken(MainActivity.this, token);
 //			}
 //			@Override
 //			public void onError(String error) {
-//				Log.d("okhttp", "error: "+error);
+//				Log.d("okhttp", "Error: " + error);
 //			}
-//	});
+//	  }
+//  ); 
 //} catch (Exception e) {
-//	log.d("mainact", e.toString())
+//	Log.d("okhttp", "Error: " + e.toString());
 //}
-//1. GET
-//2. SET
-//3. LISTEN
-//4. STATE
-//5. VISIBILITY
-//6. APPEARANCE
-//7. LAYOUT
-//8. INTERACTION
-//9. DATA BINDING
-//10. ANIMATION
-//11. NAVIGATION
-//12. LIFECYCLE-BASED ACTIONS
