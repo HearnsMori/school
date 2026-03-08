@@ -24,7 +24,7 @@ recyclerView.setAdapter(adapter);
 public class MyItem {
     String title;
     String description;
-    int imageRes; // e.g., R.drawable.icon
+    int imageRes;
     public MyItem(String title, String description, int imageRes) {
         this.title = title;
         this.description = description;

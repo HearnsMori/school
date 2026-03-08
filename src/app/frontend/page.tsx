@@ -5,7 +5,9 @@ import { useState, useEffect, useRef } from "react";
 type ChangeOrKeyboardEvent = React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>;
 
 export default function Page() {
-  const fullText: string = `//implementation("androidx.appcompat:appcompat:1.6.1")
+  const [fullText, setFullText] = useState("");
+  var fullTextArray = [`
+//implementation("androidx.appcompat:appcompat:1.6.1")
 //implementation("com.google.android.material:material:1.11.0")
 //implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 //implementation("androidx.recyclerview:recyclerview:1.3.2")
@@ -15,7 +17,7 @@ export default function Page() {
 //repositories {
 //	google()
 //	mavenCentral()
-//}
+//}`, `
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle|oval|line|ring">
@@ -46,7 +48,7 @@ export default function Page() {
     <size
         android:width="200dp"
         android:height="120dp"/>
-</shape>
+</shape>`, `
 X view = (X) findViewById(R.id.view);
 X.setText("a");
 X.setText(String.format("a %s", "User"));
@@ -54,11 +56,23 @@ X.setTextColor(Color.RED);
 X.setTextSize(0f);
 X.setText(Html.fromHtml("<a>a</a>", Html.FROM_HTML_MODE_LEGACY));
 X.setImageResource(R.drawable.X);
-X.getText().toString().isEmpty();
+X.getText().toString().isEmpty();s
 X.length();
 X.setEnabled(true); // Gray out the button (user can't click)
 X.setCheckable(true); // Makes it behave like a ToggleButton (stays pressed)
 X.setBackgroundColor(Color.RED);
+X.setChecked(true);
+X.isChecked();
+X.toggle();
+X.setNestedScrollingEnabled(false)
+X.smoothScrollTo(0, 0);
+X.getScrollX();
+X.setMinValue(0);
+X.setMaxValue(0);
+X.setValue(0);
+X.setIs24HourView(true);
+X.setProgress(0);
+X.setIndeterminate(true);`, `
 X.setOnClickListener(v -> {
     //do
 });
@@ -76,9 +90,6 @@ X.addTextChangedListener(new TextWatcher() {
     @Override
     public void afterTextChanged(Editable s) {}
 });
-X.setChecked(true);
-X.isChecked();
-X.toggle();
 X.setOnCheckedChangeListener((buttonView, isChecked) -> {
     if (isChecked) {
         //do
@@ -91,9 +102,6 @@ X.setOnCheckedChangeListener((group, checkedId) -> {
         //do
     }
 });
-X.setNestedScrollingEnabled(false)
-X.smoothScrollTo(0, 0);
-X.getScrollX();
 X.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) 
     (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
     if (scrollY > oldScrollY) {
@@ -104,20 +112,36 @@ X.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener)
     if (diff == 0) {
         //do end of content
     }
-});
-X.setMinValue(0);
-X.setMaxValue(0);
-X.setValue(0);
+})
 X.setOnValueChangedListener((picker, oldVal, newVal) -> {
     //do
 });
-X.setIs24HourView(true);
 X.setOnTimeChangedListener((view, hourOfDay, minute) -> {
     //do
 });
 X.init(2026, 2, 11, (view, year, monthOfYear, dayOfMonth) -> {
     //do
 });
+X.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        //do
+    }
+    @Override public void onStartTrackingTouch(SeekBar seekBar) {}
+    @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+});
+X.setOnRatingBarChangeListener((bar, rating, fromUser) -> {
+    //do
+});`, `
+Intent intent = new Intent(this, X.class);
+intent.putExtra("a", "a");
+intent.putExtra("b", 0);
+startActivity(intent);
+Bundle extras = getIntent().getExtras();
+if (extras != null) {
+    String a = extras.getString("a");
+    int b = extras.getInt("b");
+}`, `
 String[] a = {"USA", "UK", "UAE", "Uruguay", "Uzbekistan"};
 ArrayAdapter<String> adapter = new ArrayAdapter<>(this, 
     android.R.layout.simple_dropdown_item_1line, a);
@@ -131,28 +155,6 @@ X.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
 X.setOnItemClickListener((parent, view, position, id) -> {
     //do
 });
-X.setProgress(0);
-X.setIndeterminate(true);
-X.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-    @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        //do
-    }
-    @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-    @Override public void onStopTrackingTouch(SeekBar seekBar) {}
-});
-X.setOnRatingBarChangeListener((bar, rating, fromUser) -> {
-    //do
-});
-Intent intent = new Intent(this, X.class);
-intent.putExtra("a", "a");
-intent.putExtra("b", 0);
-startActivity(intent);
-Bundle extras = getIntent().getExtras();
-if (extras != null) {
-    String a = extras.getString("a");
-    int b = extras.getInt("b");
-}
 List<MyItem> data = new ArrayList<>();
 data.add(new MyItem("Android", "Operating System", R.drawable.ic_android));
 data.add(new MyItem("Java", "Programming Language", R.drawable.ic_java));
@@ -222,14 +224,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             img = itemView.findViewById(R.id.itemImage);
         }
     }
-}
+}`, `
 WebSettings webSettings = myWebView.getSettings();
 webSettings.setJavaScriptEnabled(true);
 X.loadUrl("https://www.google.com");
 String customHtml = "<html><body><h1>Hello World!</h1></body></html>";
 X.loadData(customHtml, "text/html", "UTF-8");
 X.getUrl();
-X.getTitle();
+X.getTitle();`, `
 private Handler handler = new Handler(Looper.getMainLooper());
 private int index = 0;
 private String fullText = "";
@@ -249,11 +251,24 @@ private Runnable characterAdder = new Runnable() {
             handler.postDelayed(characterAdder, delay);
         }
     }
-};
+};`, `
 protected void on(Start|Resume|Pause|Stop|Destroy)() {
     super.onX();
-}`;
-  
+}`];
+    useEffect(()=>{
+      const u = prompt(`
+      1 Implementation and Start
+      2 Shape
+      3 View function
+      4 Listener
+      5 Intent
+      6 Adapter
+      7 Web
+      8 Handler
+      9 onScreenCycle
+      `, "0");
+      setFullText(fullTextArray[Number(u)-1]);
+    }, []);
   const [index, setIndex] = useState<number>(0);
   const [typed, setTyped] = useState<{ char: string; correct: boolean }[]>([]);
   const [correctCount, setCorrectCount] = useState<number>(0);

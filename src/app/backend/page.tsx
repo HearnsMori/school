@@ -5,7 +5,9 @@ import { useState, useEffect, useRef } from "react";
 type ChangeOrKeyboardEvent = React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>;
 
 export default function Page() {
-  const fullText: string = `//implementation("com.squareup.okhttp3:okhttp:4.12.0")
+  const [fullText, setFullText] = useState("");
+  var fullTextArray = [`
+//implementation("com.squareup.okhttp3:okhttp:4.12.0")
 //implementation("com.google.code.gson:gson:2.10.1")
 //<uses-permission android:name="android.permission.INTERNET"/>
 package com.example.appname;
@@ -20,7 +22,7 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.Response;`, `
 public class Backend {
     private static final String server1 = "https://dbstorage.onrender.com";
     private static final String server2 = "https://dbstorage.vercel.app";
@@ -28,10 +30,10 @@ public class Backend {
     private static final String BASE_URL = server1;
     private static final String PREF_NAME = "app";
     private static final String TOKEN_KEY = "token";
-    private static OkHttpClient client;
-	public static void init(Context context) {
-    	client = new OkHttpClient.Builder().addInterceptor(chain -> {
-        	SharedPreferences prefs = context.getSharedPreferences("app", Context.MODE_PRIVATE);
+    private static OkHttpClient client;`, `
+	  public static void init(Context context) {
+        client = new OkHttpClient.Builder().addInterceptor(chain -> {
+            SharedPreferences prefs = context.getSharedPreferences("app", Context.MODE_PRIVATE);
             String token = prefs.getString("token", null);
             Request original = chain.request();
             Request.Builder builder = original.newBuilder().addHeader("Accept", "application/json");
@@ -44,11 +46,11 @@ public class Backend {
         .readTimeout(137, java.util.concurrent.TimeUnit.SECONDS)
         .writeTimeout(137, java.util.concurrent.TimeUnit.SECONDS)
         .build();
-    }
+    }`, `
     public static void saveToken(Context context, String token) {
         SharedPreferences prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         prefs.edit().putString(TOKEN_KEY, token).apply();
-    }
+    }`, `
     public static void request(
         String endpoint,
         String method,
@@ -108,12 +110,12 @@ public class Backend {
                 }
             }
         });
-    }
+    }`, `
     public interface ApiCallback {
-		void onSuccess(String response) throws JSONException;
-		void onError(String error);
+		  void onSuccess(String response) throws JSONException;
+	    void onError(String error);
     }
-}
+}`, `
 //private static String id;
 //Backend.init(this);
 //try {
@@ -138,8 +140,19 @@ public class Backend {
 //  ); 
 //} catch (Exception e) {
 //	Log.d("okhttp", "Error: " + e.toString());
-//}`;
-  
+//}`];
+  useEffect(()=>{
+    const u = prompt(`
+    1 Implementation and Imports
+    2 public class Backend
+    3 init
+    4 saveToken
+    5 request
+    6 ApiCallback
+    7 Example Usage
+    `, "0");
+    setFullText(fullTextArray[Number(u)-1]);
+  }, []);
   const [index, setIndex] = useState<number>(0);
   const [typed, setTyped] = useState<{ char: string; correct: boolean }[]>([]);
   const [correctCount, setCorrectCount] = useState<number>(0);

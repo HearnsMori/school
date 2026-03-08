@@ -5,17 +5,17 @@ import { useState, useEffect, useRef } from "react";
 type ChangeOrKeyboardEvent = React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>;
 
 export default function Page() {
-  const fullText: string = `X view = (X) findViewById(R.id.view);
+  const fullText: string = `View X = (View) findViewById(R.id.X);
 X.setText("a");
-X.setText(String.format("a %s", "User"));
+X.setText(String.format("a %s %d", "a", 0));
 X.setTextColor(Color.RED);
 X.setTextSize(0f);
 X.setText(Html.fromHtml("<a>a</a>", Html.FROM_HTML_MODE_LEGACY));
 X.setImageResource(R.drawable.X);
 X.getText().toString().isEmpty();
 X.length();
-X.setEnabled(true); // Gray out the button (user can't click)
-X.setCheckable(true); // Makes it behave like a ToggleButton (stays pressed)
+X.setEnabled(true);
+X.setCheckable(true);
 X.setBackgroundColor(Color.RED);
 X.setOnClickListener(v -> {
     //do

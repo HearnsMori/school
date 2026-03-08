@@ -16,17 +16,17 @@ export default function Page() {
 //			@Override
 //			public void onSuccess(String response) throws JSONException {
 //			  Log.d("okhttp", "Success: " + response);
-//			  JSONObject obj = new JSONObject(response);
+//        JSONObject obj = new JSONObject(response);
 //        id = obj.getString("id");
-//				String token = obj.getString("accessToken");
+//        String token = obj.getString("accessToken");
 //        Backend.saveToken(MainActivity.this, token);
 //			}
 //			@Override
 //			public void onError(String error) {
-//				Log.d("okhttp", "Error: " + error);
+//			  Log.d("okhttp", "Error: " + error);
 //			}
 //	  }
-//  ); 
+//  );
 //} catch (Exception e) {
 //	Log.d("okhttp", "Error: " + e.toString());
 //}`;
