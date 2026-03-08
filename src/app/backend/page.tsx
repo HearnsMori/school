@@ -118,8 +118,8 @@ public class Backend {
 //Backend.init(this);
 //try {
 //	JSONObject obj = new JSONObject();
-//	json.put("id", et.getText().toString());
-//	json.put("password", etp.getText().toString());
+//	obj.put("id", et.getText().toString());
+//	obj.put("password", etp.getText().toString());
 //	Backend.request("/auth/signin", "POST", obj,
 //		new Backend.ApiCallback() {
 //			@Override
