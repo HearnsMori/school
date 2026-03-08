@@ -5,23 +5,7 @@ import { useState, useEffect, useRef } from "react";
 type ChangeOrKeyboardEvent = React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>;
 
 export default function Page() {
-  const fullText: string = `//implementation("com.squareup.okhttp3:okhttp:4.12.0")
-//implementation("com.google.code.gson:gson:2.10.1")
-//<uses-permission android:name="android.permission.INTERNET"/>
-package com.example.appname;
-import android.content.Context;
-import android.content.SharedPreferences;
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.io.IOException;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-public class Backend {
+  const fullText: string = `public class Backend {
     private static final String server1 = "https://dbstorage.onrender.com";
     private static final String server2 = "https://dbstorage.vercel.app";
     private static final String server3 = "https://dbstorage-production.up.railway.app";
