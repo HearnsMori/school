@@ -7,22 +7,23 @@ type ChangeOrKeyboardEvent = React.ChangeEvent<HTMLInputElement> | React.Keyboar
 export default function Page() {
   const [fullText, setFullText] = useState("");
   var fullTextArray = [`
-//implementation("androidx.recyclerview:recyclerview:1.3.2")
-//implementation("androidx.appcompat:appcompat:1.6.1")
-//implementation("androidx.core:core:1.12.0")
-//implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-//implementation("com.google.android.material:material:1.11.0")
-//<style name="Theme.MyApp" parent="Theme.Material3.DayNight.NoActionBar"/>
-//<application android:theme="@style/Theme.MyApp">
-//repositories {
-//	google()
-//	mavenCentral()
-//}
-//<activity android:name=".YourActivityName" />`, `
+implementation("androidx.core:core:1.12.0")
+implementation("androidx.appcompat:appcompat:1.6.1")
+implementation("androidx.recyclerview:recyclerview:1.3.2")
+implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+implementation("com.google.android.material:material:1.11.0")
+<style name="Theme.MyApp" parent="Theme.Material3.DayNight.NoActionBar"/>
+<application android:theme="@style/Theme.MyApp">
+repositories {
+	google()
+	mavenCentral()
+}
+<activity android:name=".MyActivity"/>`, `
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle|oval|line|ring">
-    <solid android:color="#FFFFFF"/>
+ dev
+     <solid android:color="#FFFFFF"/>
     <gradient
         android:startColor="#FFFFFF"
         android:centerColor="#FFFFFF"
@@ -56,22 +57,22 @@ X.setText(String.format("%s %d", "a", 1));
 X.setText(Html.fromHtml("<b>a</b>", Html.FROM_HTML_MODE_LEGACY));
 X.setTextColor(Color.RED);
 X.setTextSize(1f);
+X.getText().toString().isEmpty();
+X.getText().toString().length();`, `
 X.setImageResource(R.drawable.X);
-X.getText().toString().isEmpty();s
-X.length();
 X.setEnabled(true);
-X.setCheckable(true);
-X.setBackgroundColor(Color.RED);
+X.setBackgroundColor(Color.RED);`, `
 X.setChecked(true);
 X.isChecked();
 X.toggle();
-X.setNestedScrollingEnabled(false)
+X.setCheckable(true);`, `
+X.setNestedScrollingEnabled(false);
 X.smoothScrollTo(1, 1);
-X.getScrollX();
+X.getScrollX();`, `
 X.setMinValue(1);
 X.setMaxValue(1);
-X.setValue(1);
-X.setIs24HourView(true);
+X.setValue(1);`,`
+X.setIs24HourView(true);`, `
 X.setProgress(1);
 X.setIndeterminate(true);`, `
 X.setOnClickListener(v -> {
@@ -102,7 +103,7 @@ X.setOnCheckedChangeListener((group, checkedId) -> {
     if (checkedId == R.id.X) {
         //do
     }
-});
+});`, `
 X.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) 
     (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
     if (scrollY > oldScrollY) {
@@ -113,7 +114,7 @@ X.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener)
     if (diff == 0) {
         //do end of content
     }
-})
+}); `, `
 X.setOnValueChangedListener((picker, oldVal, newVal) -> {
     //do
 });
@@ -122,7 +123,7 @@ X.setOnTimeChangedListener((view, hourOfDay, minute) -> {
 });
 X.init(2026, 2, 11, (view, year, monthOfYear, dayOfMonth) -> {
     //do
-});
+});`, `
 X.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -165,8 +166,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        //recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        //recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         dataList = new ArrayList<>();
         dataList.add(new ItemData("a", R.drawable.a, 1));
         MyAdapter adapter = new MyAdapter(dataList);
@@ -298,16 +299,26 @@ protected void on(Start|Resume|Pause|Stop|Destroy)() {
       const u = prompt(`
       1 Implementation and Start
       2 Shape
-      3 View function
-      4 Listener
-      5 Intent
-      6 Adapter
-      7 Clickable Recycler View
-      8 Back Press Dialogue
-      9 Popup Menu
-      10 Web
-      11 Handler
-      12 onScreenCycle
+      3 Set and Get Text
+      4 Button and ImageView
+      5 Checkable
+      6 ScrollView
+      7 Number
+      8 Time Pickers
+      9 Progress Bar
+      10 View function
+      11 Common Listener
+      12 Scroll Listener
+      13 Picker Listener
+      14 Progress Listener
+      15 Intent
+      16 Adapter
+      17 Clickable Recycler View
+      18 Back Press Dialogue
+      19 Popup Menu
+      20 Web
+      21 Handler
+      22 onScreenCycle
       `, "0");
       setFullText(fullTextArray[Number(u)-1]);
     }, []);
@@ -334,13 +345,16 @@ protected void on(Start|Resume|Pause|Stop|Destroy)() {
     while (
       newIndex < fullText.length &&
       (
-        fullText[newIndex]+fullText[newIndex+1] === "//" ||
-        fullText[newIndex-1]+fullText[newIndex] === "//" ||
+        (fullText[newIndex] === "/" && fullText[newIndex+1] === "/") ||
+        
         fullText[newIndex] === "\t" ||
         fullText[newIndex]+fullText[newIndex+1] === "  " ||
         fullText[newIndex-1]+fullText[newIndex] === "  "
       )
     ) {
+      if (fullText[newIndex] === "/" && fullText[newIndex+1] === "/") {
+        newIndex++;
+      }
       whitespaceChars.push({
         char: fullText[newIndex],
         correct: true,
@@ -376,21 +390,23 @@ protected void on(Start|Resume|Pause|Stop|Destroy)() {
     if (char === expected) {
       setTyped(prev => [...prev, { char: expected, correct: true }]);
       setCorrectCount(prev => prev + 1);
+      setIndex(currentIndex + 1);
     } else {
       if(
         expected === " " ||
         expected === "\n" ||
         expected === "\t"
       ) {
-        setTyped(prev => [...prev, { char: expected, correct: false }]);
-        setWrongCount(prev => prev + 1);
+        //setTyped(prev => [...prev, { char: expected, correct: false }]);
+        //setWrongCount(prev => prev + 0);
       } else {
-        setTyped(prev => [...prev, { char: expected, correct: false }]);
-        setWrongCount(prev => prev + 1);
+        //setTyped(prev => [...prev, { char: expected, correct: false }]);
+        //setWrongCount(prev => prev + 0);
       }
+      //setIndex(currentIndex + 1);
     }
 
-    setIndex(currentIndex + 1);
+    
 
     // Immediately auto-fill trailing whitespace after this char
     setTimeout(() => {

@@ -1,33 +1,26 @@
-//implementation("com.squareup.okhttp3:okhttp:4.12.0")
-//implementation("com.google.code.gson:gson:2.10.1")
-//<uses-permission android:name="android.permission.INTERNET"/>
+gradle: 
+implementation("com.squareup.okhttp3:okhttp3:4.12.0")
+implementation("com.google.code.gson:gson:2.10.1")
+
+manifest:
+<uses-permission android:name="android.permission.Internet"/>
+
+Backend.java:
 package com.example.appname;
-import android.content.Context;
-import android.content.SharedPreferences;
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.io.IOException;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 public class Backend {
-    private static final String server1 = "https://dbstorage.onrender.com";
-    private static final String server2 = "https://dbstorage.vercel.app";
-    private static final String server3 = "https://dbstorage-production.up.railway.app";
-    private static final String BASE_URL = server1;
-    private static final String PREF_NAME = "app";
-    private static final String TOKEN_KEY = "token";
-    private static OkHttpClient client;
-	public static void init(Context context) {
-    	client = new OkHttpClient.Builder().addInterceptor(chain -> {
-        	SharedPreferences prefs = context.getSharedPreferences("app", Context.MODE_PRIVATE);
+    public static final String server1 = "https://dbstorge.onrender.com";
+    public static final String server2 = "https://dbstorage.vercel.app";
+    public static final String server1 = "https://dbstorage-production.up.railway.app";
+    public static final String BASE_URL = server1;
+    public static final String PREF_NAME = "app";
+    public static final String TOKEN_KEY = "token";
+    public static OkHttpClient client;
+    public static void init(Context context) {
+        client = new OkHttpClient.Builder().addInterceptor(chain- -> {
+            SharedPreferences prefs = context.getSharedPreferences("app", Context.MODE_PRIVATE);
             String token = prefs.getString("token", null);
             Request original = chain.request();
-            Request.Builder builder = original.newBuilder().addHeader("Accept", "application/json");
+            Request.Builder() = original.newBuilder().addHeader("Accept", "application/json");
             if (token != null) {
                 builder.addHeader("Authorization", "Bearer " + token);
             }
@@ -49,15 +42,15 @@ public class Backend {
         ApiCallback callback
     ) {
         if (client == null) {
-            callback.onError("Error: backend not init");
+            callback.onError("backend not init");
             return;
         }
-        MediaType JSON = MediaType.get("application/json; charset=utf-8");
-        RequestBody requestBody = null;
+        MediaType JSON = MediaType.get("application/json; charset:utf-8");
+        RequestBody requetBody = null;
         if (body != null) {
             requestBody = RequestBody.create(body.toString(), JSON);
         }
-        Request.Builder builder = new Request.Builder().url(BASE_URL + endpoint);
+        Request.Builder builder = Request.Builder().url(BASE_UR: + endpoint);
         switch (method.toUpperCase()) {
             case "POST":
                 builder.post(requestBody);
@@ -68,7 +61,7 @@ public class Backend {
             case "DELETE":
                 if (requestBody != null)
                     builder.delete(requestBody);
-                else
+                else:
                     builder.delete();
                 break;
             default:
@@ -78,57 +71,54 @@ public class Backend {
         client.newCall(builder.build()).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                callback.onError(e.getMessage());
+                callBack.onError(e.getMessage());
             }
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String responseString = response.body() != null ? response.body().string() : "";
+            public void onSuccess(Call call, Response response) throws IOException {
+                String responseString = response.body() != null ? reponse.body()string() : "";
                 if (response.isSuccessful()) {
-                    try {
-                        JSONObject obj = new JSONObject(responseString);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        callback.onError(e.getMessage());
-                        return;
-                    }
-                    try {
-                        callback.onSuccess(responseString);
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
+                try {
+                    JSONObject obj = new JSONObject(reponseString);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    callback.onError(e.getMesage());
+                    return;
+                }
+                try {
+                    callback.onSuccess(responseString);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                    callback.onError(e.getMesage());
+                    return
+                } 
                 } else {
                     callback.onError(response.code() + " | " + responseString);
                 }
             }
-        });
+        })
+        }
     }
     public interface ApiCallback {
-		void onSuccess(String response) throws JSONException;
-		void onError(String error);
+        public void onSuccess(String response) throws JSONException;
+        public void onError(String error);
     }
 }
-//private static String id;
-//Backend.init(this);
-//try {
-//	JSONObject obj = new JSONObject();
-//	json.put("id", et.getText().toString());
-//	json.put("password", etp.getText().toString());
-//	Backend.request("/auth/signin", "POST", obj,
-//		new Backend.ApiCallback() {
-//			@Override
-//			public void onSuccess(String response) throws JSONException {
-//			  Log.d("okhttp", "Success: " + response);
-//			  JSONObject obj = new JSONObject(response);
-//        id = obj.getString("id");
-//				String token = obj.getString("accessToken");
-//        Backend.saveToken(MainActivity.this, token);
-//			}
-//			@Override
-//			public void onError(String error) {
-//				Log.d("okhttp", "Error: " + error);
-//			}
-//	  }
-//  ); 
-//} catch (Exception e) {
-//	Log.d("okhttp", "Error: " + e.toString());
-//}
+
+
+Backend.init(this);
+JSONObject obj = new JSONObject;
+obj.put("id", et.getText().toString());
+obj.put("pasword", etp.getText().toString())
+Backend.request("/auth/signup", "POST", obj, new Backend.ApiCallback() {
+   @Override
+   public void onSuccess(String response) throws JSONException {
+       Log.d("backend", error);
+   }
+   @Override
+   public void onError(String error) {
+       Log.d("backend", error);
+   }
+});
+
+.getJSONObject
+new JSONArray()

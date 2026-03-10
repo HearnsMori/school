@@ -7,9 +7,9 @@ type ChangeOrKeyboardEvent = React.ChangeEvent<HTMLInputElement> | React.Keyboar
 export default function Page() {
   const [fullText, setFullText] = useState("");
   var fullTextArray = [`
-//implementation("com.squareup.okhttp3:okhttp:4.12.0")
-//implementation("com.google.code.gson:gson:2.10.1")
-//<uses-permission android:name="android.permission.INTERNET"/>`, `
+implementation("com.squareup.okhttp3:okhttp:4.12.0")
+implementation("com.google.code.gson:gson:2.10.1")
+<uses-permission android:name="android.permission.INTERNET"/>`, `
 package com.example.appname;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -31,7 +31,7 @@ public class Backend {
     private static final String PREF_NAME = "app";
     private static final String TOKEN_KEY = "token";
     private static OkHttpClient client;`, `
-	public static void init(Context context) {
+	  public static void init(Context context) {
         client = new OkHttpClient.Builder().addInterceptor(chain -> {
             SharedPreferences prefs = context.getSharedPreferences("app", Context.MODE_PRIVATE);
             String token = prefs.getString("token", null);
@@ -112,40 +112,76 @@ public class Backend {
         });
     }`, `
     public interface ApiCallback {
-		void onSuccess(String response) throws JSONException;
+		  void onSuccess(String response) throws JSONException;
 	    void onError(String error);
     }
 }`, `
-//private static String id;
-//Backend.init(this);
-//try {
-//	JSONObject obj = new JSONObject();
-//	obj.put("id", et.getText().toString());
-//	obj.put("password", etp.getText().toString());
-//	Backend.request("/auth/signin", "POST", obj,
-//		new Backend.ApiCallback() {
-//			@Override
-//			public void onSuccess(String response) throws JSONException {
-//			  Log.d("okhttp", "Success: " + response);
-//			  JSONObject obj = new JSONObject(response);
-//            id = obj.getString("id");
-//			  String token = obj.getString("accessToken");
-//            Backend.saveToken(MainActivity.this, token);
-//            JSONArray arr = new JSONArray();
-//            arr.put("a","a");
-//            obj.put("a", arr);
-//            JSONArray arr2 = obj.getJSONArray("a");
-//            String a = arr2.getString("a");
-//			}
-//			@Override
-//			public void onError(String error) {
-//				Log.d("okhttp", "Error: " + error);
-//			}
-//	  }
-//  ); 
-//} catch (Exception e) {
-//	Log.d("okhttp", "Error: " + e.toString());
-//}`];
+private static String id;
+Backend.init(this);
+try {
+	JSONObject obj = new JSONObject();
+	obj.put("id", et.getText().toString());
+	obj.put("password", etp.getText().toString());
+	Backend.request("/auth/signin", "POST", obj,
+		new Backend.ApiCallback() {
+			@Override
+			public void onSuccess(String response) throws JSONException {
+			  Log.d("okhttp", "Success: " + response);
+			  JSONObject obj = new JSONObject(response);
+        id = obj.getString("id");
+			  String token = obj.getString("accessToken");
+        Backend.saveToken(MainActivity.this, token);
+        JSONObject obj2 = new JSONObject();
+        JSONArray app = new JSONArray();
+        JSONArray collectionName = new JSONArray();
+        JSONArray collectionKey = new JSONArray();
+        JSONArray key = new JSONArray();
+        JSONArray value = new JSONArray();
+        app.put("app");
+        app.put("app2");
+        collectionName.put("collectionName");
+        collectionName.put("collectionName2");
+        collectionKey.put("collectionKey");
+        collectionKey.put("collectionKey2");
+        key.put("key");
+        key.put("key2");
+        value.put("value");
+        value.put("value2"); 
+        obj2.put("app", app);
+        obj2.put("collectionName", collectionName);
+        obj2.put("collectionKey", collectionKey);
+        obj2.put("key", key);
+        obj2.put("value", value);
+        Backend.request("/setItem", "POST", obj2,
+        new Backend.ApiCallback() {
+          @Override
+          public void onSuccess(String response) throws JSONException {
+              JSONObject obj = new JSONObject(response);
+              Backend.request("/getItem", "POST", obj2,
+              new Backend.ApiCallback() {
+                @Override
+                public void onSuccess(String reponse) throws JSONException {
+                  JSONObject obj = new JSONObject(response);
+                  JSONObject app = obj.getJSONObject("app");
+                  JSONObject collectionName = app.getJSONObject("collectionName");
+                  String value = collectionName.getString("value");
+                  String collectionKey = collectionName.getString("collectionKey");
+                }
+              })
+          }
+          @Override
+          public void onError(String error) {}
+        })
+			}
+			@Override
+			public void onError(String error) {
+				Log.d("backend", "Error: " + error);
+			}
+	  }
+  ); 
+} catch (Exception e) {
+	Log.d("okhttp", "Error: " + e.toString());
+}`];
   useEffect(()=>{
     const u = prompt(`
     1 setup
@@ -169,6 +205,7 @@ public class Backend {
   // Display whitespace symbols
   function displayChar(char: string): string {
     if (char === " ") return "·";
+    if (char === "/") return "/";
     if (char === "\n") return "↵\n";
     if (char === "\t") return "····";
     return char;
@@ -182,13 +219,16 @@ public class Backend {
     while (
       newIndex < fullText.length &&
       (
-        fullText[newIndex]+fullText[newIndex+1] === "//" ||
-        fullText[newIndex-1]+fullText[newIndex] === "//" ||
+        (fullText[newIndex] === "/" && fullText[newIndex+1] === "/") ||
+        
         fullText[newIndex] === "\t" ||
         fullText[newIndex]+fullText[newIndex+1] === "  " ||
         fullText[newIndex-1]+fullText[newIndex] === "  "
       )
     ) {
+      if (fullText[newIndex] === "/" && fullText[newIndex+1] === "/") {
+        newIndex++;
+      }
       whitespaceChars.push({
         char: fullText[newIndex],
         correct: true,
@@ -224,21 +264,23 @@ public class Backend {
     if (char === expected) {
       setTyped(prev => [...prev, { char: expected, correct: true }]);
       setCorrectCount(prev => prev + 1);
+      setIndex(currentIndex + 1);
     } else {
       if(
         expected === " " ||
         expected === "\n" ||
         expected === "\t"
       ) {
-        setTyped(prev => [...prev, { char: expected, correct: false }]);
-        setWrongCount(prev => prev + 1);
+        //setTyped(prev => [...prev, { char: expected, correct: false }]);
+        //setWrongCount(prev => prev + 0);
       } else {
-        setTyped(prev => [...prev, { char: expected, correct: false }]);
-        setWrongCount(prev => prev + 1);
+        //setTyped(prev => [...prev, { char: expected, correct: false }]);
+        //setWrongCount(prev => prev + 0);
       }
+      //setIndex(currentIndex + 1);
     }
 
-    setIndex(currentIndex + 1);
+    
 
     // Immediately auto-fill trailing whitespace after this char
     setTimeout(() => {
