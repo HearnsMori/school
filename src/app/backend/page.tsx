@@ -128,9 +128,14 @@ public class Backend {
 //			public void onSuccess(String response) throws JSONException {
 //			  Log.d("okhttp", "Success: " + response);
 //			  JSONObject obj = new JSONObject(response);
-//        id = obj.getString("id");
-//				String token = obj.getString("accessToken");
-//        Backend.saveToken(MainActivity.this, token);
+//            id = obj.getString("id");
+//			  String token = obj.getString("accessToken");
+//            Backend.saveToken(MainActivity.this, token);
+//            JSONArray arr = new JSONArray();
+//            arr.put("a","a");
+//            obj.put("a", arr);
+//            JSONArray arr2 = obj.getJSONArray("a");
+//            String a = arr2.getString("a");
 //			}
 //			@Override
 //			public void onError(String error) {

@@ -7,11 +7,11 @@ type ChangeOrKeyboardEvent = React.ChangeEvent<HTMLInputElement> | React.Keyboar
 export default function Page() {
   const [fullText, setFullText] = useState("");
   var fullTextArray = [`
-//implementation("androidx.appcompat:appcompat:1.6.1")
-//implementation("com.google.android.material:material:1.11.0")
-//implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 //implementation("androidx.recyclerview:recyclerview:1.3.2")
+//implementation("androidx.appcompat:appcompat:1.6.1")
 //implementation("androidx.core:core:1.12.0")
+//implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+//implementation("com.google.android.material:material:1.11.0")
 //<style name="Theme.MyApp" parent="Theme.Material3.DayNight.NoActionBar"/>
 //<application android:theme="@style/Theme.MyApp">
 //repositories {
@@ -23,55 +23,55 @@ export default function Page() {
     android:shape="rectangle|oval|line|ring">
     <solid android:color="#FFFFFF"/>
     <gradient
-        android:startColor="#FF6F00"
-        android:centerColor="#FFA000"
-        android:endColor="#FFD54F"
-        android:angle="45"
+        android:startColor="#FFFFFF"
+        android:centerColor="#FFFFFF"
+        android:endColor="#FFFFFF"
+        android:angle="1"
         android:type="linear"
-        android:gradientRadius="200dp"/>
+        android:gradientRadius="1dp"/>
     <stroke
-        android:width="3dp"
-        android:color="#EEEEEE"
-        android:dashWidth="6dp"
-        android:dashGap="4dp"/>
+        android:width="1dp"
+        android:color="#FFFFFF"
+        android:dashWidth="1dp"
+        android:dashGap="1dp"/>
     <corners
-        android:radius="16dp"
-        android:topLeftRadius="24dp"
-        android:topRightRadius="24dp"
-        android:bottomLeftRadius="8dp"
-        android:bottomRightRadius="8dp"/>
+        android:radius="1dp"
+        android:topLeftRadius="1dp"
+        android:topRightRadius="1dp"
+        android:bottomLeftRadius="1dp"
+        android:bottomRightRadius="1dp"/>
     <padding
-        android:left="12dp"
-        android:top="12dp"
-        android:right="12dp"
-        android:bottom="12dp"/>
+        android:left="1dp"
+        android:top="1dp"
+        android:right="1dp"
+        android:bottom="1dp"/>
     <size
-        android:width="200dp"
-        android:height="120dp"/>
+        android:width="1dp"
+        android:height="1dp"/>
 </shape>`, `
-X view = (X) findViewById(R.id.view);
+View X = (View) findViewById(R.id.X);
 X.setText("a");
-X.setText(String.format("a %s", "User"));
+X.setText(String.format("%s %d", "a", 1));
+X.setText(Html.fromHtml("<b>a</b>", Html.FROM_HTML_MODE_LEGACY));
 X.setTextColor(Color.RED);
-X.setTextSize(0f);
-X.setText(Html.fromHtml("<a>a</a>", Html.FROM_HTML_MODE_LEGACY));
+X.setTextSize(1f);
 X.setImageResource(R.drawable.X);
 X.getText().toString().isEmpty();s
 X.length();
-X.setEnabled(true); // Gray out the button (user can't click)
-X.setCheckable(true); // Makes it behave like a ToggleButton (stays pressed)
+X.setEnabled(true);
+X.setCheckable(true);
 X.setBackgroundColor(Color.RED);
 X.setChecked(true);
 X.isChecked();
 X.toggle();
 X.setNestedScrollingEnabled(false)
-X.smoothScrollTo(0, 0);
+X.smoothScrollTo(1, 1);
 X.getScrollX();
-X.setMinValue(0);
-X.setMaxValue(0);
-X.setValue(0);
+X.setMinValue(1);
+X.setMaxValue(1);
+X.setValue(1);
 X.setIs24HourView(true);
-X.setProgress(0);
+X.setProgress(1);
 X.setIndeterminate(true);`, `
 X.setOnClickListener(v -> {
     //do
@@ -135,7 +135,7 @@ X.setOnRatingBarChangeListener((bar, rating, fromUser) -> {
 });`, `
 Intent intent = new Intent(this, X.class);
 intent.putExtra("a", "a");
-intent.putExtra("b", 0);
+intent.putExtra("b", 1);
 startActivity(intent);
 Bundle extras = getIntent().getExtras();
 if (extras != null) {
@@ -154,74 +154,65 @@ X.setAdapter(adapter);
 X.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
 X.setOnItemClickListener((parent, view, position, id) -> {
     //do
-});
-List<MyItem> data = new ArrayList<>();
-data.add(new MyItem("Android", "Operating System", R.drawable.ic_android));
-data.add(new MyItem("Java", "Programming Language", R.drawable.ic_java));
-recyclerView.setLayoutManager(new LinearLayoutManager(this));
-recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-MyAdapter adapter = new MyAdapter(data);
-recyclerView.setAdapter(adapter);
-public class MyItem {
-    String title;
-    String description;
-    int imageRes; // e.g., R.drawable.icon
-    public MyItem(String title, String description, int imageRes) {
-        this.title = title;
-        this.description = description;
-        this.imageRes = imageRes;
-    }
-}
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
-    private List<MyItem> itemList;
-    public MyAdapter(List<MyItem> itemList) {
-        this.itemList = itemList;
-    }
+});`, `
+public class MainActivity extends AppCompatActivity {
+    RecyclerView recyclerView;
+    List<ItemData> dataList;
     @Override
-    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_layout, parent, false);
-        return new MyViewHolder(view);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main); // make sure activity_main has a RecyclerView with id recyclerView
+ = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        //recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        //recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        dataList = new ArrayList<>();
+        dataList.add(new ItemData("a", R.drawable.a, 1));
+        MyAdapter adapter = new MyAdapter(dataList);
+        recyclerView.setAdapter(adapter);
     }
-    @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
-        MyItem currentItem = itemList.get(position);
-        holder.title.setText(currentItem.title);
-        holder.desc.setText(currentItem.description);
-        holder.img.setImageResource(currentItem.imageRes);
-        holder.itemView.setOnClickListener(v -> {
-            Toast.makeText(v.getContext(), "Clicked: " + currentItem.title, Toast.LENGTH_SHORT).show();
-            LayoutInflater inflater = getLayoutInflater();
-            View layout = inflater.inflate(R.layout.custom_toast, findViewById(R.id.custom_toast_container));
-            TextView text = layout.findViewById(R.id.toast_text);
-            text.setText(message);
-            Toast toast = new Toast(getApplicationContext());
-            toast.setDuration(Toast.LENGTH_LONG);
-            toast.setView(layout);
-            toast.show();
-            new AlertDialog.Builder(this)
-                .setTitle("A")
-                .setMessage("a?")
-                .setPositiveButton("Yes", (dialog, which) -> {
-                    //do
-                })
-                .setNegativeButton("No", null)
-                .setIcon(R.drawable.a)
-                .show();
-        });
+    static class ItemData {
+        String name;
+        int imageRes;
+        int number;
+        ItemData(String name, int imageRes, int number) {
+            this.name = name;
+            this.imageRes = imageRes;
+            this.number = number;
+        }
     }
-    @Override
-    public int getItemCount() {
-        return itemList.size();
-    }
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
-        TextView title, desc;
-        ImageView img;
-        public MyViewHolder(View itemView) {
-            super(itemView);
-            title = itemView.findViewById(R.id.itemTitle);
-            desc = itemView.findViewById(R.id.itemDesc);
-            img = itemView.findViewById(R.id.itemImage);
+    static class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+        List<ItemData> list;
+        MyAdapter(List<ItemData> list) {
+            this.list = list;
+        }
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_layout, parent, false); // create item_layout.xml with TextView and ImageView
+            return new ViewHolder(view);
+        }
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            ItemData item = list.get(position);
+            holder.textView.setText(item.name + " (" + item.number + ")");
+            holder.imageView.setImageResource(item.imageRes);
+            holder.itemView.setOnClickListener(v -> {
+                Toast.makeText(v.getContext(), "Clicked: " + item.name, Toast.LENGTH_SHORT).show();
+            });
+        }
+        @Override
+        public int getItemCount() {
+            return list.size();
+        }
+        static class ViewHolder extends RecyclerView.ViewHolder {
+            TextView textView;
+            ImageView imageView;
+            ViewHolder(@NonNull View itemView) {
+                super(itemView);
+                textView = itemView.findViewById(R.id.itemText);
+                imageView = itemView.findViewById(R.id.itemImage);
+            }
         }
     }
 }`, `
@@ -263,9 +254,10 @@ protected void on(Start|Resume|Pause|Stop|Destroy)() {
       4 Listener
       5 Intent
       6 Adapter
-      7 Web
-      8 Handler
-      9 onScreenCycle
+      7 Recycler View with OnClick
+      8 Web
+      9 Handler
+      10 onScreenCycle
       `, "0");
       setFullText(fullTextArray[Number(u)-1]);
     }, []);
