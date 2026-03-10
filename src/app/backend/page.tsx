@@ -9,7 +9,7 @@ export default function Page() {
   var fullTextArray = [`
 //implementation("com.squareup.okhttp3:okhttp:4.12.0")
 //implementation("com.google.code.gson:gson:2.10.1")
-//<uses-permission android:name="android.permission.INTERNET"/>
+//<uses-permission android:name="android.permission.INTERNET"/>`, `
 package com.example.appname;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -31,7 +31,7 @@ public class Backend {
     private static final String PREF_NAME = "app";
     private static final String TOKEN_KEY = "token";
     private static OkHttpClient client;`, `
-	  public static void init(Context context) {
+	public static void init(Context context) {
         client = new OkHttpClient.Builder().addInterceptor(chain -> {
             SharedPreferences prefs = context.getSharedPreferences("app", Context.MODE_PRIVATE);
             String token = prefs.getString("token", null);
@@ -112,7 +112,7 @@ public class Backend {
         });
     }`, `
     public interface ApiCallback {
-		  void onSuccess(String response) throws JSONException;
+		void onSuccess(String response) throws JSONException;
 	    void onError(String error);
     }
 }`, `
@@ -148,13 +148,14 @@ public class Backend {
 //}`];
   useEffect(()=>{
     const u = prompt(`
-    1 Implementation and Imports
-    2 public class Backend
-    3 init
-    4 saveToken
-    5 request
-    6 ApiCallback
-    7 Example Usage
+    1 setup
+    2 import
+    3 public class Backend
+    4 init
+    5 saveToken
+    6 request
+    7 ApiCallback
+    8 Example Usage
     `, "0");
     setFullText(fullTextArray[Number(u)-1]);
   }, []);

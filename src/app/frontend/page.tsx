@@ -17,7 +17,8 @@ export default function Page() {
 //repositories {
 //	google()
 //	mavenCentral()
-//}`, `
+//}
+//<activity android:name=".YourActivityName" />`, `
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle|oval|line|ring">
@@ -161,8 +162,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main); // make sure activity_main has a RecyclerView with id recyclerView
- = findViewById(R.id.recyclerView);
+        setContentView(R.layout.activity_main);
+        recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         //recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         //recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
@@ -216,6 +217,53 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }`, `
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setTitle("Exit App")
+                .setMessage("Are you sure you want to exit?")
+                .setCancelable(true)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
+`, `
+res/menu/my_menu.xml
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/option1"
+        android:title="Option 1"
+        android:icon="@drawable/ic_option1"
+        android:showAsAction="never"/>
+
+    <item
+        android:id="@+id/option2"
+        android:title="Option 2"
+        android:icon="@drawable/ic_option2"
+        android:showAsAction="never"/>
+
+</menu>
+PopupMenu popup = new PopupMenu(this, myButton);
+popup.getMenuInflater().inflate(R.menu.my_menu, popup.getMenu());
+popup.setOnMenuItemClickListener(item -> {
+    switch(item.getItemId()) {
+        case R.id.option1: 
+            //do
+            return true;
+        case R.id.option2:
+            //do
+            return true;
+    }
+    return false;
+});
+popup.show();`, `
 WebSettings webSettings = myWebView.getSettings();
 webSettings.setJavaScriptEnabled(true);
 X.loadUrl("https://www.google.com");
@@ -254,10 +302,12 @@ protected void on(Start|Resume|Pause|Stop|Destroy)() {
       4 Listener
       5 Intent
       6 Adapter
-      7 Recycler View with OnClick
-      8 Web
-      9 Handler
-      10 onScreenCycle
+      7 Clickable Recycler View
+      8 Back Press Dialogue
+      9 Popup Menu
+      10 Web
+      11 Handler
+      12 onScreenCycle
       `, "0");
       setFullText(fullTextArray[Number(u)-1]);
     }, []);
