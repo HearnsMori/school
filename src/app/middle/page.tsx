@@ -5,8 +5,7 @@ import { useState, useEffect, useRef } from "react";
 type ChangeOrKeyboardEvent = React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>;
 
 export default function Page() {
-  const fullText: string = `
-import android.app.Activity;
+  const fullText: string = `import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
@@ -22,51 +21,34 @@ import org.json.JSONObject;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.HashMap;
-
 public class AppUtils {
-
     private static SharedPreferences prefs;
     private static SharedPreferences.Editor editor;
     private static final String PREF_NAME = "CodefestDataStore";
-
-    // ==========================================
-    // 1. INITIALIZATION
-    // ==========================================
     public static void init(Context context) {
         if (prefs == null) {
             prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
             editor = prefs.edit();
         }
     }
-
-    // ==========================================
-    // 2. AUTHENTICATION
-    // ==========================================
     public static boolean signupUser(String name, String password) {
         if (prefs.contains("USER_" + name)) return false; 
         editor.putString("USER_" + name, password).apply();
         return true;
     }
-
     public static boolean loginUser(String name, String password) {
         String savedPass = prefs.getString("USER_" + name, null);
         return savedPass != null && savedPass.equals(password);
     }
-
     public static boolean signupAdmin(String name, String password) {
         if (prefs.contains("ADMIN_" + name)) return false; 
         editor.putString("ADMIN_" + name, password).apply();
         return true;
     }
-
     public static boolean loginAdmin(String name, String password) {
         String savedPass = prefs.getString("ADMIN_" + name, null);
         return savedPass != null && savedPass.equals(password);
     }
-
-    // ==========================================
-    // 3. NoSQL-STYLE STORAGE
-    // ==========================================
     public static void setItem(String collection, String key, String value) {
         try {
             String colStr = prefs.getString("COL_" + collection, "{}");
@@ -77,7 +59,6 @@ public class AppUtils {
             e.printStackTrace();
         }
     }
-
     public static String getItem(String collection, String key) {
         try {
             String colStr = prefs.getString("COL_" + collection, "{}");
@@ -87,12 +68,10 @@ public class AppUtils {
             return null;
         }
     }
-
     public static void setCollection(String collection, Map<String, String> data) {
         JSONObject jsonObject = new JSONObject(data);
         editor.putString("COL_" + collection, jsonObject.toString()).apply();
     }
-
     public static Map<String, String> getCollection(String collection) {
         Map<String, String> map = new HashMap<>();
         try {
@@ -108,10 +87,6 @@ public class AppUtils {
         }
         return map;
     }
-
-    // ==========================================
-    // 4. UI / THEME CONTROLS
-    // ==========================================
     public static void toggleMode(String mode) {
         if (mode.equalsIgnoreCase("Dark")) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
@@ -119,14 +94,9 @@ public class AppUtils {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
     }
-
-    // ==========================================
-    // 5. HACKATHON LIFESAVERS
-    // ==========================================
     public static void showToast(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
-
     public static void hideKeyboard(Activity activity) {
         View view = activity.getCurrentFocus();
         if (view != null) {
@@ -134,40 +104,28 @@ public class AppUtils {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
-
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
-
-    // ==========================================
-    // 6. SWIPE GESTURE LISTENER (Nested Class)
-    // ==========================================
     public static class OnSwipeTouchListener implements View.OnTouchListener {
-
         private final GestureDetector gestureDetector;
-
         public OnSwipeTouchListener(Context context) {
             gestureDetector = new GestureDetector(context, new GestureListener());
         }
-
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-            v.performClick(); // Good practice for accessibility
+            v.performClick();
             return gestureDetector.onTouchEvent(event);
         }
-
         private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
-
             private static final int SWIPE_THRESHOLD = 100;
             private static final int SWIPE_VELOCITY_THRESHOLD = 100;
-
             @Override
             public boolean onDown(MotionEvent e) {
                 return true; 
             }
-
             @Override
             public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
                 boolean result = false;
@@ -196,116 +154,158 @@ public class AppUtils {
                 }
                 return result;
             }
-
             @Override
             public boolean onDoubleTap(MotionEvent e) {
                 onDoubleClick();
                 return true;
             }
         }
-
         public void onSwipeRight() {}
         public void onSwipeLeft() {}
         public void onSwipeTop() {}
         public void onSwipeBottom() {}
         public void onDoubleClick() {}
     }
+    public interface OnItemClickListener<T> {
+        void onItemClick(T item, int position);
+    }
+    public static abstract class GenericAdapter<T> extends androidx.recyclerview.widget.RecyclerView.Adapter<GenericAdapter.ViewHolder> {
+        protected java.util.List<T> list;
+        protected java.util.List<T> listFull;
+        private final int layoutId;
+        private final OnItemClickListener<T> listener;
+        public GenericAdapter(int layoutId, java.util.List<T> list, OnItemClickListener<T> listener) {
+            this.layoutId = layoutId;
+            this.list = list;
+            this.listFull = new java.util.ArrayList<>(list);
+            this.listener = listener;
+        }
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull android.view.ViewGroup parent, int viewType) {
+            android.view.View v = android.view.LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
+            return new ViewHolder(v);
+        }
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+            T item = list.get(position);
+            bindData(holder, item);
+            holder.itemView.setOnClickListener(v -> listener.onItemClick(item, position));
+        }
+        @Override
+        public int getItemCount() { return list.size(); }
+        public abstract void bindData(ViewHolder holder, T item);
+        public static class ViewHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
+            public ViewHolder(android.view.View v) { super(v); }
+            public <V extends android.view.View> V find(int id) { 
+                return itemView.findViewById(id); 
+            }
+        }
+        public void filter(String query, FilterLogic<T> logic) {
+            list.clear();
+            if (query.isEmpty()) {
+                list.addAll(listFull);
+            } else {
+                for (T item : listFull) {
+                    if (logic.onFilter(item, query.toLowerCase())) {
+                        list.add(item);
+                    }
+                }
+            }
+            notifyDataSetChanged();
+        }
+        public interface FilterLogic<T> {
+            boolean onFilter(T item, String query);
+        }
+    }
 }
-
+public class Module {
+    public String name;
+    public int iconResId;
+    public Module(String name, int icon) {
+        this.name = name;
+        this.iconResId = icon;
+    }
+}
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.HashMap;
 import java.util.Map;
-
 public class MainActivity extends AppCompatActivity {
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // 1. Initialize the Utils FIRST (Crucial!)
         AppUtils.init(this);
-
-        // --- AUTHENTICATION EXAMPLES ---
-        
-        // Simulating a new student signup
         boolean isSignedUp = AppUtils.signupUser("hearns_mori", "securePass123");
         if (isSignedUp) {
             AppUtils.showToast(this, "Account created successfully!");
         }
-
-        // Logging in
         if (AppUtils.loginUser("hearns_mori", "securePass123")) {
             AppUtils.showToast(this, "Welcome to NurSYNC!");
         } else {
             AppUtils.showToast(this, "Invalid credentials.");
         }
-
-
-        // --- STORAGE EXAMPLES ---
-
-        // Saving a single item (e.g., tracking a specific flashcard deck's status)
         AppUtils.setItem("Flashcards", "anatomy_deck", "completed");
-        
-        // Retrieving that item later
         String status = AppUtils.getItem("Flashcards", "anatomy_deck");
-        // status will equal "completed"
-
-        // Saving an entire collection at once using a Map (e.g., student module progress)
         Map<String, String> moduleProgress = new HashMap<>();
-        moduleProgress.put("pharmacology", "85%");
-        moduleProgress.put("pathophysiology", "92%");
-        moduleProgress.put("patient_care", "100%");
-        
+        moduleProgress.put("pharmacology", "100%");;
         AppUtils.setCollection("UserProgress_hearns", moduleProgress);
-
-        // Fetching the collection back
         Map<String, String> savedProgress = AppUtils.getCollection("UserProgress_hearns");
-        String pharmaScore = savedProgress.get("pharmacology"); // returns "85%"
-
-
-        // --- UI & EXTRAS EXAMPLES ---
-        
-        // Toggling Dark Mode on a button click
+        String pharmaScore = savedProgress.get("pharmacology");
         findViewById(R.id.btn_dark_mode).setOnClickListener(v -> {
             AppUtils.toggleMode("Dark");
         });
-
-        // Checking internet before making an API call to a FastAPI backend
         if (!AppUtils.isNetworkAvailable(this)) {
             AppUtils.showToast(this, "No internet! Check your connection.");
         }
-        
-        // Hiding keyboard after a user types in a search bar
         findViewById(R.id.btn_search).setOnClickListener(v -> {
             AppUtils.hideKeyboard(this);
-            // execute search...
         });
         View mySwipeableView = findViewById(R.id.my_swipe_container);
-
         mySwipeableView.setOnTouchListener(new AppUtils.OnSwipeTouchListener(this) {
             @Override
             public void onSwipeRight() {
                 super.onSwipeRight();
                 AppUtils.showToast(MainActivity.this, "Swiped Right!");
-                // e.g., Go back a page, dismiss an item
             }
-
             @Override
             public void onSwipeLeft() {
                 super.onSwipeLeft();
                 AppUtils.showToast(MainActivity.this, "Swiped Left!");
-                // e.g., Move to next page, delete an item
             }
-
             @Override
             public void onDoubleClick() {
                 super.onDoubleClick();
-                // e.g., "Like" a post or zoom in
             }
         });
     }
+    List<Module> myData = new ArrayList<>();
+    myData.add(new Module("Cardiology", R.drawable.ic_heart));
+    myData.add(new Module("Neurology", R.drawable.ic_brain));
+    AppUtils.GenericAdapter<Module> adapter = new AppUtils.GenericAdapter<Module>(
+        R.layout.item_custom_layout, 
+        myData, 
+        (item, pos) -> AppUtils.showToast(this, "Clicked " + item.name)
+    ) {
+        @Override
+        public void bindData(ViewHolder holder, Module item) {
+            TextView txt = holder.find(R.id.module_name);
+            ImageView img = holder.find(R.id.module_icon);
+            txt.setText(item.name);
+            img.setImageResource(item.iconResId);
+        }
+    };
+    recyclerView.setAdapter(adapter);
+    searchBar.addTextChangedListener(new TextWatcher() {
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            adapter.filter(s.toString(), (item, query) -> 
+                item.name.toLowerCase().contains(query)
+            );
+        }
+        //...
+    });
 }
 `;
   const [index, setIndex] = useState<number>(0);
