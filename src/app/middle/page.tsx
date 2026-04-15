@@ -49,43 +49,62 @@ public class AppUtils {
         String savedPass = prefs.getString("ADMIN_" + name, null);
         return savedPass != null && savedPass.equals(password);
     }
-    public static void setItem(String collection, String key, String value) {
+    public static void setItem(String userName, String collection, String key, String value) {
         try {
-            String colStr = prefs.getString("COL_" + collection, "{}");
-            JSONObject jsonObject = new JSONObject(colStr);
-            jsonObject.put(key, value);
-            editor.putString("COL_" + collection, jsonObject.toString()).apply();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+            String fullColKey = userName + "_COL_" + collection;
+            JSONObject json = new JSONObject(prefs.getString(fullColKey, "{}"));
+            json.put(key, value);
+            editor.putString(fullColKey, json.toString()).apply();
+        } catch (JSONException e) { e.printStackTrace(); }
     }
-    public static String getItem(String collection, String key) {
-        try {
-            String colStr = prefs.getString("COL_" + collection, "{}");
-            JSONObject jsonObject = new JSONObject(colStr);
-            return jsonObject.optString(key, null);
-        } catch (JSONException e) {
-            return null;
-        }
-    }
-    public static void setCollection(String collection, Map<String, String> data) {
-        JSONObject jsonObject = new JSONObject(data);
-        editor.putString("COL_" + collection, jsonObject.toString()).apply();
-    }
-    public static Map<String, String> getCollection(String collection) {
-        Map<String, String> map = new HashMap<>();
-        try {
-            String colStr = prefs.getString("COL_" + collection, "{}");
-            JSONObject jsonObject = new JSONObject(colStr);
-            Iterator<String> keys = jsonObject.keys();
-            while (keys.hasNext()) {
-                String key = keys.next();
-                map.put(key, jsonObject.getString(key));
+    public static String getItem(String userName, String collection, String key, boolean fromSpecificUser) {
+        if (fromSpecificUser) {
+            try {
+                String fullColKey = userName + "_COL_" + collection;
+                return new JSONObject(prefs.getString(fullColKey, "{}")).optString(key, null);
+            } catch (JSONException e) { return null; }
+        } else {
+            JSONObject globalResults = new JSONObject();
+            Map<String, ?> allEntries = prefs.getAll();
+            for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+                if (entry.getKey().contains("_COL_" + collection)) {
+                    try {
+                        JSONObject userCol = new JSONObject(entry.getValue().toString());
+                        if (userCol.has(key)) {
+                            String owner = entry.getKey().split("_COL_")[0];
+                            globalResults.put(owner, userCol.getString(key));
+                        }
+                    } catch (JSONException ignored) {}
+                }
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
+            return globalResults.toString();
         }
-        return map;
+    }
+    public static void setCollection(String userName, String collection, Map<String, String> data) {
+        JSONObject jsonObject = new JSONObject(data);
+        editor.putString(userName + "_COL_" + collection, jsonObject.toString()).apply();
+    }
+    public static Map<String, String> getCollection(String userName, String collection, boolean fromSpecificUser) {
+        Map<String, String> resultMap = new HashMap<>();
+        if (fromSpecificUser) {
+            try {
+                String fullColKey = userName + "_COL_" + collection;
+                JSONObject json = new JSONObject(prefs.getString(fullColKey, "{}"));
+                Iterator<String> keys = json.keys();
+                while (keys.hasNext()) {
+                    String k = keys.next();
+                    resultMap.put(k, json.getString(k));
+                }
+            } catch (JSONException e) { e.printStackTrace(); }
+        } else {
+            Map<String, ?> allEntries = prefs.getAll();
+            for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+                if (entry.getKey().endsWith("_COL_" + collection)) {
+                    resultMap.put(entry.getKey(), entry.getValue().toString());
+                }
+            }
+        }
+        return resultMap;
     }
     public static void toggleMode(String mode) {
         if (mode.equalsIgnoreCase("Dark")) {
